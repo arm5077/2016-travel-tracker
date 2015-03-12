@@ -1,0 +1,25 @@
+{
+  "name": "travel-tracker",
+  "version": "1.0.0",
+  "description": "An application monitoring where candidates for the 2016 presidential election have traveled.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arm5077/2016-travel-tracker.git"
+  },
+  "author": "Andrew McGill",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arm5077/2016-travel-tracker/issues"
+  },
+  "homepage": "https://github.com/arm5077/2016-travel-tracker",
+  "dependencies": {
+    "edit-google-spreadsheet": "^0.2.16",
+    "express": "^4.12.2",
+    "moment": "^2.9.0",
+    "mysql": "^2.5.5"
+  }
+}
