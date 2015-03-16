@@ -13,11 +13,12 @@ var connection = mysql.createConnection({
 });
 connection.connect();
 
-
+app.get("/candidates/:candidate", function(request, response){
+	
+});
 
 // Launch scraper
-app.get("/scrape", function(request, response){
-	
+app.get("/scrape", function(request, response){	
 	var spreadsheet_username = process.env.SPREADSHEET_USERNAME;
 	var spreadsheet_password = process.env.SPREADSHEET_PASSWORD;
 
