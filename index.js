@@ -9,7 +9,8 @@ var geocoder = require('node-geocoder').getGeocoder("openstreetmap");;
 var connection = mysql.createConnection({
 	host: process.env.MYSQL_HOST || "localhost",
 	user: process.env.MYSQL_USER || "root",
-	password: process.env.MYSQL_PASSWORD || ""
+	password: process.env.MYSQL_PASSWORD || "",
+	database: process.env.MYSQL_DATABASE || "travel"
 });
 connection.connect();
 
@@ -42,7 +43,7 @@ app.get("/trips", function(request, response){
 
 	}
 	
-	query_string = "SELECT * FROM travel.trips WHERE 1=1" + params + " ORDER BY start DESC";
+	query_string = "SELECT * FROM trips WHERE 1=1" + params + " ORDER BY start DESC";
 	
 	connection.query(query_string, function(err, rows, header){
 		if( err ) throw err;
@@ -50,7 +51,7 @@ app.get("/trips", function(request, response){
 		var queryCount = 0;
 		rows.forEach(function(trip){
 			queryCount++; 
-			connection.query("SELECT stops.id, places.city, places.state, places.lat, places.lng FROM travel.stops JOIN travel.places ON stops.placeid = places.id WHERE tripid = ? ORDER BY stops.id ASC", [trip.tripid], function(err, stops, header){
+			connection.query("SELECT stops.id, places.city, places.state, places.lat, places.lng FROM stops JOIN places ON stops.placeid = places.id WHERE tripid = ? ORDER BY stops.id ASC", [trip.tripid], function(err, stops, header){
 				if( err ) throw err;
 				trip.stops = stops;
 				queryCount--;
@@ -88,9 +89,9 @@ app.get("/scrape", function(request, response){
 			var trips = makeObjectFromSpreadsheet(rows);
 
 			// Truncate all tables and reset to nothing
-			connection.query('TRUNCATE TABLE travel.candidates');
-			connection.query('TRUNCATE TABLE travel.stops');
-			connection.query('TRUNCATE TABLE travel.trips;');
+			connection.query('TRUNCATE TABLE candidates');
+			connection.query('TRUNCATE TABLE stops');
+			connection.query('TRUNCATE TABLE trips;');
 
 			var added_cities = [];
 
@@ -101,12 +102,12 @@ app.get("/scrape", function(request, response){
 					// Insert candidate name into database (unless already exists)
 					// But first, get rid of annoying extra spaces. Stupid Google Sheets. 
 					name = trip["First Name"].replace(/\s/g, '') + " " + trip["Last Name"].replace(/\s/g, '');
-					connection.query('INSERT IGNORE INTO travel.candidates (name, party) VALUES (?,?);', [name, trip["Party (R or D)"]], function(err, info) {
+					connection.query('INSERT IGNORE INTO candidates (name, party) VALUES (?,?);', [name, trip["Party (R or D)"]], function(err, info) {
 						if(err) throw err;
 					});
 
 					// Insert the actual trip
-					connection.query('INSERT INTO travel.trips (candidate, state, start, end, total_days, accompanied_by, notes) VALUES (?,?,?,?,?,?,?)', 
+					connection.query('INSERT INTO trips (candidate, state, start, end, total_days, accompanied_by, notes) VALUES (?,?,?,?,?,?,?)', 
 						[name, trip["State (Abbrev.)"], moment( trip["Start Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), moment( trip["End Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), trip["Total Days"], trip["Appeared With (if more than one, use commas)"], trip["Notes"] ], 
 					function(err, info) {
 
@@ -128,14 +129,14 @@ app.get("/scrape", function(request, response){
 										if( true ) {
 											added_cities.push(trip[city] + ", " + trip["State (Abbrev.)"]);
 											// See if the city already exists in the database
-											connection.query('SELECT * FROM travel.places WHERE city = ? AND state = ?', [trip[city], trip["State (Abbrev.)"]], function(err, rows, header){
+											connection.query('SELECT * FROM places WHERE city = ? AND state = ?', [trip[city], trip["State (Abbrev.)"]], function(err, rows, header){
 												if(err) throw err;
 
 												// City already exists! Pop-U-lar. 
 												if(rows.length > 0){
 													// Now that that's settled, let's add the stop
 													placeid = rows[0].id;
-													connection.query('INSERT INTO travel.stops (tripid, placeid) VALUES (?,?)', [trip.tripid, placeid], function(){ 
+													connection.query('INSERT INTO stops (tripid, placeid) VALUES (?,?)', [trip.tripid, placeid], function(){ 
 														if( err ) throw err; 
 														completed++;
 														console.log(completed);
@@ -144,11 +145,11 @@ app.get("/scrape", function(request, response){
 												}
 												else {
 													console.log("Added " + trip[city]);													
-													connection.query("INSERT IGNORE INTO travel.places (city, state) VALUES (?,?)", [trip[city], trip["State (Abbrev.)"]], function(err, info){
+													connection.query("INSERT IGNORE INTO places (city, state) VALUES (?,?)", [trip[city], trip["State (Abbrev.)"]], function(err, info){
 														if(err) throw err; 
 
 														if( info.insertId == 0 ){
-															connection.query('SELECT * FROM travel.places WHERE city = ? AND state = ?', [trip[city], trip["State (Abbrev.)"]], function(err, rows, header){
+															connection.query('SELECT * FROM places WHERE city = ? AND state = ?', [trip[city], trip["State (Abbrev.)"]], function(err, rows, header){
 																if( err ) throw err;
 																addStop(trip.tripid, rows[0].id);
 															});
@@ -182,7 +183,7 @@ app.get("/scrape", function(request, response){
 				if( res.length == 0 || !res[0] ) res.push({"latitude": 0, "longitude": 0})
 
 				// Add it to the database
-				connection.query("UPDATE travel.places SET lat = ?, lng = ? WHERE city = ? AND state = ?", [parseFloat(res[0].latitude), parseFloat(res[0].longitude), city, state], function(err, info){ 
+				connection.query("UPDATE places SET lat = ?, lng = ? WHERE city = ? AND state = ?", [parseFloat(res[0].latitude), parseFloat(res[0].longitude), city, state], function(err, info){ 
 					if(err) throw err;
 				});
 			});
@@ -192,14 +193,14 @@ app.get("/scrape", function(request, response){
 	}
 
 	function findPlace(city, state){
-		connection.query('SELECT * FROM travel.places WHERE city = ? AND state = ?', [city, state], function(err, rows, header){
+		connection.query('SELECT * FROM places WHERE city = ? AND state = ?', [city, state], function(err, rows, header){
 			if( err ) throw err;
 			return rows;
 		});
 	}
 
 	function addStop(tripid, placeid){
-		connection.query('INSERT INTO travel.stops (tripid, placeid) VALUES (?,?)', [tripid, placeid], function(err, info){ 
+		connection.query('INSERT INTO stops (tripid, placeid) VALUES (?,?)', [tripid, placeid], function(err, info){ 
 			if( err ) throw err; 
 			completed++;
 			console.log(completed);
