@@ -6,12 +6,7 @@ var mysql = require("mysql");
 var geocoder = require('node-geocoder').getGeocoder("openstreetmap");;
 
 // Open connection to mySQL database
-var connection = mysql.createConnection({
-	host: process.env.MYSQL_HOST || "localhost",
-	user: process.env.MYSQL_USER || "root",
-	password: process.env.MYSQL_PASSWORD || "",
-	database: process.env.MYSQL_DATABASE || "travel"
-});
+var connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL || "mysql://root@localhost/travel");
 connection.connect();
 
 // Turn on server
