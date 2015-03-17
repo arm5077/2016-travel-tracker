@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/arm5077/2016-travel-tracker",
   "dependencies": {
+    "body-parser": "^1.12.2",
     "edit-google-spreadsheet": "^0.2.16",
     "express": "^4.12.2",
     "moment": "^2.9.0",

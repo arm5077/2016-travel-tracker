@@ -13,7 +13,55 @@ var connection = mysql.createConnection({
 });
 connection.connect();
 
-app.get("/candidates/:candidate", function(request, response){
+// Turn on server
+var port = process.env.PORT || 3000;
+app.listen(port, function(){
+	console.log("We're live at port " + port + ".");
+});
+
+
+app.get("/trips", function(request, response){
+	var result = {};
+	var params = "";
+	
+	// Handle query parameters
+	if( request.query.start )
+		params += " AND start >=" + connection.escape(moment( request.query.start ).format("YYYY-MM-DD")); 
+	if( request.query.end )
+		params += " AND end <=" + connection.escape(moment( request.query.end ).format("YYYY-MM-DD"));
+	if( request.query.state )	
+		params += " AND state = " + connection.escape( request.query.state );
+	if( request.query.candidates) {
+		params += " AND (";
+		candidates = request.query.candidates.split(",");
+		candidates.forEach(function(candidate){
+			params += " REPLACE(candidate, ' ', '') = " + connection.escape(candidate) + " OR"; 
+		});
+			params = params.slice(0,-3);
+			params += ")";
+
+	}
+	
+	query_string = "SELECT * FROM travel.trips WHERE 1=1" + params + " ORDER BY start DESC";
+	
+	connection.query(query_string, function(err, rows, header){
+		if( err ) throw err;
+		
+		var queryCount = 0;
+		rows.forEach(function(trip){
+			queryCount++; 
+			connection.query("SELECT stops.id, places.city, places.state, places.lat, places.lng FROM travel.stops JOIN travel.places ON stops.placeid = places.id WHERE tripid = ? ORDER BY stops.id ASC", [trip.tripid], function(err, stops, header){
+				if( err ) throw err;
+				trip.stops = stops;
+				queryCount--;
+				if( queryCount == 0 ) response.status(200).json({ count: rows.length, results: rows });
+			});
+		});
+		
+		
+	});
+	
+
 	
 });
 
@@ -46,8 +94,6 @@ app.get("/scrape", function(request, response){
 
 			var added_cities = [];
 
-
-
 			// Cycle through each "trip" row
 			trips.forEach(function(trip){
 				// This is my lil way of determining whether a row is undefined. There is probably a better way to do it.
@@ -60,8 +106,8 @@ app.get("/scrape", function(request, response){
 					});
 
 					// Insert the actual trip
-					connection.query('INSERT INTO travel.trips (candidate, start, end, total_days, accompanied_by, notes) VALUES (?,?,?,?,?,?)', 
-						[name, moment( trip["Start Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), moment( trip["End Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), trip["Total Days"], trip["Appeared With (if more than one, use commas)"], trip["Notes"] ], 
+					connection.query('INSERT INTO travel.trips (candidate, state, start, end, total_days, accompanied_by, notes) VALUES (?,?,?,?,?,?,?)', 
+						[name, trip["State (Abbrev.)"], moment( trip["Start Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), moment( trip["End Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), trip["Total Days"], trip["Appeared With (if more than one, use commas)"], trip["Notes"] ], 
 					function(err, info) {
 
 						// Save that tripid. 
