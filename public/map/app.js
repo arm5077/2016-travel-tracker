@@ -59,6 +59,8 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 				else
 					currentColor = 0; 
 		
+				lastLatLng = [];
+		
 				// Cycle through trips
 				$scope.candidates[name].forEach( function(trip){
 					// Loop through stops
@@ -73,6 +75,23 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 							strokeOpacity:.4,
 							radius: 10
 						} ).addTo(map);
+						
+						if( lastLatLng.length > 0 ){
+							L.polyline([ [trip.stops[i].lat, trip.stops[i].lng], lastLatLng ], {
+								color: $scope.colors[currentColor],
+								dashArray: "3,10"
+							}).addTo(map);
+							lastLatLng = [];
+						}
+						
+						if( i < trip.stops.length - 1 ){
+							L.polyline([ [trip.stops[i].lat, trip.stops[i].lng], [trip.stops[i+1].lat, trip.stops[i+1].lng] ], {
+								color: $scope.colors[currentColor]
+							}).addTo(map);
+						} else {
+							lastLatLng = [trip.stops[i].lat, trip.stops[i].lng];
+						}
+						
 					}
 				});
 			}	
