@@ -15,10 +15,14 @@ app.listen(port, function(){
 	console.log("We're live at port " + port + ".");
 });
 
+// Set up static page (map screen)
+app.use("/map", express.static(__dirname + '/public/map'));
 
 app.get("/trips", function(request, response){
 	var result = {};
 	var params = "";
+	
+	console.log(request.query);
 	
 	// Handle query parameters
 	if( request.query.start )
