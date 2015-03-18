@@ -18,6 +18,10 @@ app.listen(port, function(){
 // Set up static page (map screen)
 app.use("/map", express.static(__dirname + '/public/map'));
 
+// Assets endpoint
+app.use("/assets", express.static(__dirname + '/public/assets'));
+
+
 app.get("/trips", function(request, response){
 	var result = {};
 	var params = "";
@@ -50,7 +54,7 @@ app.get("/trips", function(request, response){
 		var queryCount = 0;
 		rows.forEach(function(trip){
 			queryCount++; 
-			connection.query("SELECT stops.id, places.city, places.state, places.lat, places.lng FROM stops JOIN places ON stops.placeid = places.id WHERE tripid = ? ORDER BY stops.id ASC", [trip.tripid], function(err, stops, header){
+			connection.query("SELECT stops.id, places.id as placeid, places.city, places.state, places.lat, places.lng FROM stops JOIN places ON stops.placeid = places.id WHERE tripid = ? ORDER BY stops.id ASC", [trip.tripid], function(err, stops, header){
 				if( err ) throw err;
 				trip.stops = stops;
 				queryCount--;

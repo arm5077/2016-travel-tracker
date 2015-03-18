@@ -42,12 +42,46 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 	}).success(function(data, status, headers, config){
 		
 		// Build new array with candidate as the base
-		$scope.candidates = {};
+		var candidates = {};
 		data.results.forEach(function(trip){
-			if( !$scope.candidates.hasOwnProperty( trip.candidate ) )
-				$scope.candidates[trip.candidate] = [];
-			$scope.candidates[trip.candidate].push(trip);
+			if( !candidates.hasOwnProperty( trip.candidate ) )
+				candidates[trip.candidate] = [];
+			candidates[trip.candidate].push(trip);
 		});
+		
+		$scope.candidates = [];
+		// Group locations within candidates
+		for( name in candidates ){
+			if( candidates.hasOwnProperty(name) ){
+				candidateObject = { "name": name };
+				
+				var places = {};
+				// Go through each trip...
+				candidates[name].forEach(function(trip){
+					trip.stops.forEach(function(stop){
+						if( !places.hasOwnProperty(stop.placeid) )
+							places[stop.placeid] = [];
+						// And collect those places.
+						places[stop.placeid].push(stop)
+					});
+				});
+				
+				var places_array = [];
+				for( place in places ){
+					if( places.hasOwnProperty(place) ){
+						places_array.push(places[place]);
+					}
+				}
+				
+				candidateObject["places"] = places_array;
+				$scope.candidates.push(candidateObject);
+				console.log(candidateObject);
+			}
+		}
+		console.log($scope.candidates);
+		
+		
+		/*
 		
 		// Loop through candidates
 		currentColor = 0
@@ -66,16 +100,13 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 					// Loop through stops
 					for( i=0; i<=trip.stops.length - 1; i++) {
 						
-						// Add marker
-						L.circleMarker([trip.stops[i].lat, trip.stops[i].lng], {
-							fillColor: $scope.colors[currentColor],
-							fillOpacity: .8,
-							weight: 5,
-							color: $scope.colors[currentColor],
-							strokeOpacity:.4,
-							radius: 10
-						} ).addTo(map);
+						// If this stop goes nowhere (is at 0,0) let's remove it before it causes MORE trouble
+						if( trip.stops[i] == 0 ) {
+							trip.stops.splice(i, 1);
+							continue;
+						}
 						
+						// If we've just moved from a previous chain, connect to it with a dotted line
 						if( lastLatLng.length > 0 ){
 							L.polyline([ [trip.stops[i].lat, trip.stops[i].lng], lastLatLng ], {
 								color: $scope.colors[currentColor],
@@ -84,20 +115,49 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 							lastLatLng = [];
 						}
 						
+						// Which stop are we on??
 						if( i < trip.stops.length - 1 ){
 							L.polyline([ [trip.stops[i].lat, trip.stops[i].lng], [trip.stops[i+1].lat, trip.stops[i+1].lng] ], {
 								color: $scope.colors[currentColor]
 							}).addTo(map);
+							
+							
+							// Add marker
+							addMarker([trip.stops[i].lat, trip.stops[i].lng], $scope.colors[currentColor]);
+						
 						} else {
 							lastLatLng = [trip.stops[i].lat, trip.stops[i].lng];
+							
+							// If we're on the last stop of the last trip, lay the portrait down
+							if( $scope.candidates[name].indexOf(trip) == $scope.candidates[name].length -1 ){
+								// Add portrait marker
+								L.marker([trip.stops[i].lat, trip.stops[i].lng], {
+									icon: L.icon({
+										iconUrl: "/assets/walker.png",
+										iconSize: [30,30]
+									})
+								}).addTo(map);
+							} else {
+								addMarker([trip.stops[i].lat, trip.stops[i].lng], $scope.colors[currentColor]);
+							}
 						}
-						
 					}
 				});
 			}	
-		}
+		}*/
 	}).error(function(data, status, headers, config){
 		throw "Looks like we couldn't get data: " + data;
 	});
 	
-}])
+	function addMarker(LatLng, color){
+		marker = L.circleMarker(LatLng, {
+			fillColor: color,
+			fillOpacity: .8,
+			weight: 5,
+			color: color,
+			strokeOpacity:.4,
+			radius: 10
+		}).addTo(map);
+	}
+	
+}]);
