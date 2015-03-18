@@ -83,7 +83,7 @@ app.get("/scrape", function(request, response){
 	}, function(err, spreadsheet){
 		if( err ) throw err;
 		spreadsheet.receive(function(err, rows, info) {
-
+			if( err ) throw err;
 			// Cycle through spreadsheet and create new object
 			var trips = makeObjectFromSpreadsheet(rows);
 
@@ -109,7 +109,7 @@ app.get("/scrape", function(request, response){
 					connection.query('INSERT INTO trips (candidate, state, start, end, total_days, accompanied_by, notes) VALUES (?,?,?,?,?,?,?)', 
 						[name, trip["State (Abbrev.)"], moment( trip["Start Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), moment( trip["End Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), trip["Total Days"], trip["Appeared With (if more than one, use commas)"], trip["Notes"] ], 
 					function(err, info) {
-
+						if( err ) throw err;
 						// Save that tripid. 
 						trip.tripid = info.insertId;
 
@@ -176,7 +176,6 @@ app.get("/scrape", function(request, response){
 		// Pull lat/lng info from geocoder. But do it in a timeout so we don't overwhelm Ye Olde Geoparser
 		setTimeout( function(){
 			geocoder.geocode(city + ", " + state, function(err, res){
-				console.log(res);
 				if(err) throw err;
 				// Did we actually get a geocoding result?
 				if( res.length == 0 || !res[0] ) res.push({"latitude": 0, "longitude": 0})
