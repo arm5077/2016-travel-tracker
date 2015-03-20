@@ -24,9 +24,6 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 	// Change this tilelayer
 	L.tileLayer('http://{s}.tiles.mapbox.com/v3/arm5077.78b64076/{z}/{x}/{y}.png', {}).addTo(map);
 	
-	
-	
-	
 	$scope.parameters = $location.search();
 	var queryString = "";
 	for( parameter in $scope.parameters) {
@@ -59,14 +56,19 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 				// Go through each trip...
 				candidates[name].forEach(function(trip){
 					trip.stops.forEach(function(stop){
-						if( !places.hasOwnProperty(stop.placeid) )
-							places[stop.placeid] = [];
-						// And collect those places.
-						places[stop.placeid].push(stop)
+						if( !places.hasOwnProperty(stop.placeid) ){
+							places[stop.placeid] = stop;
+							places[stop.placeid].trips = [];
+							places[stop.placeid].count = 0;
+						}
+						places[stop.placeid].count++;
+						trip.stops = "";
+						places[stop.placeid].trips.push(trip)
 					});
 				});
 				
 				var places_array = [];
+				
 				for( place in places ){
 					if( places.hasOwnProperty(place) ){
 						places_array.push(places[place]);
@@ -74,17 +76,31 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 				}
 				
 				candidateObject["places"] = places_array;
-				$scope.candidates.push(candidateObject);
-				console.log(candidateObject);
+				$scope.candidates.push(candidateObject);;
+			
 			}
 		}
+		
 		console.log($scope.candidates);
-		
-		
-		/*
 		
 		// Loop through candidates
 		currentColor = 0
+		
+		$scope.candidates.forEach(function(candidate){
+			if( currentColor < ($scope.colors.length -1) )
+				currentColor++;
+			else
+				currentColor = 0;
+				
+			candidate.places.forEach(function(place){
+				console.log( place.trips.length );
+				addMarker([place.lat, place.lng], $scope.colors[currentColor], Math.sqrt( place.trips.length * 700 / Math.PI ));
+				
+			});
+				
+		});
+		
+		/*
 		for( name in $scope.candidates ){
 			if( $scope.candidates.hasOwnProperty(name) ){
 			
@@ -149,14 +165,14 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 		throw "Looks like we couldn't get data: " + data;
 	});
 	
-	function addMarker(LatLng, color){
+	function addMarker(LatLng, color, radius){
 		marker = L.circleMarker(LatLng, {
 			fillColor: color,
 			fillOpacity: .8,
 			weight: 5,
 			color: color,
 			strokeOpacity:.4,
-			radius: 10
+			radius: radius
 		}).addTo(map);
 	}
 	
