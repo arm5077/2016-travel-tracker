@@ -19,7 +19,10 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 	];
 	
 	// Initialize map
-	var map = L.map('map').setView([39.8282, -98.5795], 4);
+	var map = L.map('map', {
+		maxZoom: 7,
+		minZoom: 4
+	}).setView([39.8282, -98.5795], 4);
 	
 	// Change this tilelayer
 	L.tileLayer('http://{s}.tiles.mapbox.com/v3/arm5077.78b64076/{z}/{x}/{y}.png', {}).addTo(map);
@@ -48,7 +51,27 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 		
 		var currentColor = 0;
 		var markers = new L.MarkerClusterGroup({
-			maxClusterRadius: 10
+			maxClusterRadius: 40,
+			spiderfyDistanceMultiplier: 3,
+			iconCreateFunction: function(cluster){
+				rawClusterColors = cluster.getAllChildMarkers().map(function(marker){ return marker.options.color })
+				clusterColors = [];
+				unique = {};
+				rawClusterColors.forEach(function(clusterColor){
+					if( !unique[clusterColor] && clusterColor ) {
+							clusterColors.push(clusterColor);
+							unique[clusterColor] = "color added!";
+					}
+				});
+				console.log(clusterColors);
+				
+				boxesHTML = "";
+				clusterColors.forEach(function(clusterColor){
+					boxesHTML += '<div class="box" style = "width: ' + (1 / clusterColors.length * 100) + '%; background-color: ' + clusterColor + '"></div>';
+				});
+				
+				return new L.DivIcon({ html: '<div class=\'circle\'>' + boxesHTML + '<div class="number">' + cluster.getChildCount() + '</div></div>' });
+			}
 		});
 		
 		for( name in $scope.candidates ){
@@ -98,12 +121,13 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 							// If we're on the last stop of the last trip, lay the portrait down
 							if( $scope.candidates[name].indexOf(trip) == $scope.candidates[name].length -1 ){
 								// Add portrait marker
-								L.marker([trip.stops[i].lat, trip.stops[i].lng], {
-									icon: L.icon({
-										iconUrl: "/assets/walker.png",
-										iconSize: [30,30]
+								markers.addLayer( new L.marker([trip.stops[i].lat, trip.stops[i].lng], {
+									icon: L.divIcon({
+										html: "<div class='portrait' style='background-color: " + $scope.colors[currentColor] + "'><img src='/assets/" + name.replace(" ", "") + ".png' /></div>",
+										iconSize: [50,50],
+										className: ""
 									})
-								}).addTo(map);
+								}))
 							} else {
 								addMarker([trip.stops[i].lat, trip.stops[i].lng], $scope.colors[currentColor], 10, markers);
 							}
@@ -126,7 +150,7 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 			weight: 5,
 			color: color,
 			strokeOpacity:.4,
-			radius: radius
+			radius: radius,
 		}));
 	}
 	

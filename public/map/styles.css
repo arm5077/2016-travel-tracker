@@ -1,9 +1,60 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,300,500,700);
+
 html, body {
 	width: 100%;
 	height: 100%;
+	font-family: Roboto, Arial, sans-serif;
 }
 
 #map {
 	width: 100%;
 	height: 100%;
 }
+
+.portrait {
+	background-color: seagreen;
+	border-radius: 50%;
+	width: 100%;
+	height:100%;
+	overflow: hidden;
+}
+
+	.portrait img {
+		width:100%;
+		height:100%;
+	}
+	
+.leaflet-div-icon {
+	background:none;
+	border:none;
+	
+}
+
+	.leaflet-div-icon .circle{
+		width:30px;
+		height:30px;
+		border-radius: 50%;
+		background-color: seagreen;
+		position:relative;
+		top:-15px;
+		left:-15px;
+		overflow:hidden;
+		position: relative;
+	}
+		
+		.leaflet-div-icon .circle .box{
+			height:100%;
+			float:left;
+		}
+		
+		.leaflet-div-icon .circle .number {
+			color:white;
+			height: 100%;
+			width: 100%;
+			position:absolute;
+			line-height:100%;
+			text-align:center;
+			line-height: 30px;
+			font-size: 14pt;
+			font-weight:400;
+		}
