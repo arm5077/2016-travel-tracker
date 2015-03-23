@@ -5,11 +5,7 @@ var Spreadsheet = require('edit-google-spreadsheet');
 var mysql = require("mysql");
 var geocoder = require('node-geocoder').getGeocoder("openstreetmap");;
 
-// Open connection to mySQL database
-var connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL || "mysql://root@localhost/travel");
-connection.on("error", function(err){  
-	throw err;
-});
+
 
 
 // Turn on server
@@ -26,7 +22,9 @@ app.use("/assets", express.static(__dirname + '/public/assets'));
 
 
 app.get("/trips", function(request, response){
-	connection.connect( function(err){ if(err) throw err; });
+	
+	var connection = connectMySQL();
+	
 	var result = {};
 	var params = "";
 	
@@ -78,7 +76,9 @@ app.get("/trips", function(request, response){
 
 // Launch scraper
 app.get("/scrape", function(request, response){	
-	connection.connect( function(err){ if(err) throw err; });
+	
+	var connection = connectMySQL();
+	
 	var spreadsheet_username = process.env.SPREADSHEET_USERNAME;
 	var spreadsheet_password = process.env.SPREADSHEET_PASSWORD;
 
@@ -238,5 +238,19 @@ app.get("/scrape", function(request, response){
 		}
 		return export_array;
 	}
+	
+	
+	
 });
 
+function connectMySQL(){
+	// Open connection to mySQL database
+	var connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL || "mysql://root@localhost/travel");
+	connection.on("error", function(err){  
+		throw err;
+	});
+
+	connection.connect( function(err){ if(err) throw err; });
+	
+	return connection;
+}
