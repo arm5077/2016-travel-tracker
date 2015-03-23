@@ -29,6 +29,16 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 	// Throw in my custom baselayer
 		L.tileLayer('http://{s}.tiles.mapbox.com/v3/arm5077.78b64076/{z}/{x}/{y}.png', {}).addTo(map);
 	
+	// Add targeting reticule
+		var target = L.circleMarker([0,0], {
+			stroke: true,
+			color: "red",
+			fill: false,
+			dashArray: "2,5",
+			radius: 50,
+			opacity: 0
+		}).addTo(map);
+	
 	// Pull in parameters and make API request
 	$scope.parameters = $location.search();
 	$http({
@@ -213,6 +223,15 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 		console.log(url);
 		window.location = "/map/?" + url;
 	};
+	
+	$scope.moveTarget = function(trip, color){
+			target.setLatLng([trip.stops[0].lat, trip.stops[0].lng]);
+			target.setStyle({ opacity: 1, color: color });
+	}
+	
+	$scope.clearTarget = function(){
+		target.setStyle({ opacity: 0 });
+	}
 	
 }]);
 
