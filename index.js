@@ -10,7 +10,7 @@ var connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL || "mys
 connection.on("error", function(err){  
 	throw err;
 });
-connection.connect( function(err){ if(err) throw err; });
+
 
 // Turn on server
 var port = process.env.PORT || 3000;
@@ -26,6 +26,7 @@ app.use("/assets", express.static(__dirname + '/public/assets'));
 
 
 app.get("/trips", function(request, response){
+	connection.connect( function(err){ if(err) throw err; });
 	var result = {};
 	var params = "";
 	
@@ -61,7 +62,10 @@ app.get("/trips", function(request, response){
 				if( err ) throw err;
 				trip.stops = stops;
 				queryCount--;
-				if( queryCount == 0 ) response.status(200).json({ count: rows.length, results: rows, params: request.query });
+				if( queryCount == 0 ) {
+					response.status(200).json({ count: rows.length, results: rows, params: request.query });
+					connection.end();
+				}
 			});
 		});
 		
@@ -74,6 +78,7 @@ app.get("/trips", function(request, response){
 
 // Launch scraper
 app.get("/scrape", function(request, response){	
+	connection.connect( function(err){ if(err) throw err; });
 	var spreadsheet_username = process.env.SPREADSHEET_USERNAME;
 	var spreadsheet_password = process.env.SPREADSHEET_PASSWORD;
 
