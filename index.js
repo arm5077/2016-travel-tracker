@@ -7,6 +7,9 @@ var geocoder = require('node-geocoder').getGeocoder("openstreetmap");;
 
 // Open connection to mySQL database
 var connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL || "mysql://root@localhost/travel");
+connection.on("error", function(err){  
+	throw err;
+});
 connection.connect( function(err){ if(err) throw err; });
 
 // Turn on server
