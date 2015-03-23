@@ -7,7 +7,7 @@ var geocoder = require('node-geocoder').getGeocoder("openstreetmap");;
 
 // Open connection to mySQL database
 var connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL || "mysql://root@localhost/travel");
-connection.connect();
+connection.connect( function(err){ if(err) throw err; });
 
 // Turn on server
 var port = process.env.PORT || 3000;
@@ -92,9 +92,9 @@ app.get("/scrape", function(request, response){
 			var trips = makeObjectFromSpreadsheet(rows);
 
 			// Truncate all tables and reset to nothing
-			connection.query('TRUNCATE TABLE candidates');
-			connection.query('TRUNCATE TABLE stops');
-			connection.query('TRUNCATE TABLE trips;');
+			connection.query('TRUNCATE TABLE candidates', function(err, rows, header){ if( err ) throw err; });
+			connection.query('TRUNCATE TABLE stops', function(err, rows, header){ if( err ) throw err; });
+			connection.query('TRUNCATE TABLE trips;', function(err, rows, header){ if( err ) throw err; });
 
 			var added_cities = [];
 

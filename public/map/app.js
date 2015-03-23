@@ -25,9 +25,9 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 		maxZoom: 7,
 		minZoom: 4
 	}).setView([39.8282, -98.5795], 4);
-	
+
 	// Throw in my custom baselayer
-	L.tileLayer('http://{s}.tiles.mapbox.com/v3/arm5077.78b64076/{z}/{x}/{y}.png', {}).addTo(map);
+		L.tileLayer('http://{s}.tiles.mapbox.com/v3/arm5077.78b64076/{z}/{x}/{y}.png', {}).addTo(map);
 	
 	// Pull in parameters and make API request
 	$scope.parameters = $location.search();
@@ -121,11 +121,11 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 						// Which stop are we on?? If a trip has multiple stops, connect with solid line
 						if( i > 0 ){
 							
-							/*
+						
 							L.polyline([ [trip.stops[i].lat, trip.stops[i].lng], [trip.stops[i-1].lat, trip.stops[i-1].lng] ], {
 								color: $scope.colors[currentColor]
 							}).addTo(map);
-							*/
+						
 							
 							addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[currentColor], 10, markers);
 						
