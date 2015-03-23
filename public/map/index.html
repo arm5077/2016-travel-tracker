@@ -15,13 +15,88 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
 	
+	<!-- FontAwesome -->
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	
+	<!-- Moment.js -->
+	 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.js"></script>
+	
+	<!-- scrollTo -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="//cdn.jsdelivr.net/jquery.scrollto/2.1.0/jquery.scrollTo.min.js"></script>
+	
+	
+	
 	<!-- Site styles -->
 	<link rel="stylesheet" href="styles.css" />
 	
 </head>
 
 <body ng-controller="travelController">
-	<div id="map"></div>
+	<div id="rail">
+		<ul class="events">
+			<li ng-repeat="trip in data" ng-click="clickTrip(trip)" id="{{trip.tripid}}" ng-class="{selected: trip.selected == true }">
+				<table>
+					<tr>
+						<td style="background-color: {{candidates[trip.candidate].color}}; width: 10px">
+							
+						</td>
+						<td>
+							<h3>{{trip.candidate}}</h3>
+							<table class="stats">
+								<tr>
+									<td>
+										<i class="fa fa-calendar"></i>
+									</td>
+									<td>
+										{{moment(trip.start).format("M/d/YYYY")}}
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<i class="fa fa-map-marker"></i>
+									</td>
+									<td>
+										<ul>
+											<li ng-repeat="stop in trip.stops">{{stop.city}}, {{stop.state}}</li>
+										</ul>
+									</td>
+								</tr>
+								<tr ng-show="trip.accompanied_by">
+									<td>
+										<i class="fa fa-user"></i>
+									</td>
+									<td>
+										{{trip.accompanied_by}}
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<i class="fa fa-newspaper-o"></i>
+									</td>
+									<td>
+										{{trip.notes}} 
+									</td>
+									
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</li>
+		</ul>
+	</div>
+	<map id="map">
+		<div class="search">
+			<form>
+				<i class="fa fa-calendar"></i>
+				<input type="date" ng-model="params.start"></input>
+				<input type="date" ng-model="params.end"></input>
+				<button ng-click="submit()">Go</button>
+			</form>
+		</div>
+		
+	</map>
 </body>
 
 <script src="app.js"></script>

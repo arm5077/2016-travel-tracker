@@ -58,7 +58,7 @@ app.get("/trips", function(request, response){
 				if( err ) throw err;
 				trip.stops = stops;
 				queryCount--;
-				if( queryCount == 0 ) response.status(200).json({ count: rows.length, results: rows });
+				if( queryCount == 0 ) response.status(200).json({ count: rows.length, results: rows, params: request.query });
 			});
 		});
 		
