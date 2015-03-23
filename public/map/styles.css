@@ -92,6 +92,17 @@ td {
 
 }
 
+#rail .total {
+	text-align: center;
+  font-size: 14pt;
+  padding: 10px;
+  font-weight: 900;
+  background-color: #333;
+  box-shadow: 0px 2px 1px #222;
+  z-index: 10;
+  position: relative;
+}
+
 #rail ul.events {
 	margin: 0;
 	list-style: none;

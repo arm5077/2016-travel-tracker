@@ -70,9 +70,9 @@ app.get("/trips", function(request, response){
 		
 	});
 	
-
-	
 });
+
+
 
 // Launch scraper
 app.get("/scrape", function(request, response){	
@@ -109,7 +109,8 @@ app.get("/scrape", function(request, response){
 			// Cycle through each "trip" row
 			trips.forEach(function(trip){
 				// This is my lil way of determining whether a row is undefined. There is probably a better way to do it.
-				if (trip["First Name"]){
+				if (trip["First Name"] && moment( trip["Start Date (mm/dd/yy)"] ) <= moment(new Date()) ){
+					
 					// Insert candidate name into database (unless already exists)
 					// But first, get rid of annoying extra spaces. Stupid Google Sheets. 
 					name = trip["First Name"].replace(/\s/g, '') + " " + trip["Last Name"].replace(/\s/g, '');

@@ -34,6 +34,7 @@
 
 <body ng-controller="travelController">
 	<div id="rail">
+		<div class="total" ng-bind="count + ' trips'"></div>
 		<ul class="events">
 			<li ng-repeat="trip in data" ng-click="clickTrip(trip)" id="{{trip.tripid}}" ng-class="{selected: trip.selected == true }" ng-mouseOver="moveTarget(trip, candidates[trip.candidate].color)" ng-mouseLeave="clearTarget()">
 				<table>
@@ -49,7 +50,7 @@
 										<i class="fa fa-calendar"></i>
 									</td>
 									<td>
-										{{moment(trip.start).format("M/d/YYYY")}}
+										{{moment(trip.start).format("M/D/YYYY")}}
 									</td>
 								</tr>
 								<tr>

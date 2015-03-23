@@ -58,6 +58,10 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 		
 		$scope.data = data.results;
 		
+		console.log($scope.data);
+		
+		$scope.count = data.count;
+		
 		// Build new array with candidate as the base
 		$scope.candidates = {};
 		data.results.forEach(function(trip){
@@ -71,6 +75,7 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 			maxClusterRadius: 40,
 			spiderfyDistanceMultiplier: 3,
 			showCoverageOnHover: false,
+			singleMarkerMode: true,
 			iconCreateFunction: function(cluster){
 				rawClusterColors = cluster.getAllChildMarkers().map(function(marker){ return marker.options.color })
 				clusterColors = [];
@@ -143,6 +148,8 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 							lastLatLng = [trip.stops[i].lat, trip.stops[i].lng];
 							
 							// If we're on the first stop of the last trip, lay the portrait down
+							
+							/*
 							if( $scope.candidates[name].indexOf(trip) == 0 ){
 								// Add portrait marker
 								var marker = new L.marker([trip.stops[i].lat, trip.stops[i].lng], {
@@ -158,8 +165,8 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 								markers.addLayer(marker);
 							
 							} else {
-								addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[currentColor], 10, markers);
-							}
+							*/	addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[currentColor], 10, markers);
+							//}
 						}
 					}
 				});
@@ -174,13 +181,9 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 	
 	function addMarker(LatLng, trip, color, radius, markers){
 		
-		var marker = new L.circleMarker(LatLng, {
-			fillColor: color,
-			fillOpacity: .8,
-			weight: 5,
+		var marker = new L.marker(LatLng, {
 			color: color,
-			strokeOpacity:.4,
-			radius: radius
+			icon: '<div class=\'circle\'><div class="number">1</div></div>'
 		});
 		
 
