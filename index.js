@@ -28,11 +28,18 @@ app.get("/candidates", function(request, response){
 	var pending = 0;
 	var connection = connectMySQL();
 
-	connection.query("SELECT trips.candidate, candidates.party, state, accompanied_by, notes, DATE_FORMAT(MAX(start), '%Y-%m-%d') as start from trips JOIN candidates on candidates.name=trips.candidate group by candidate order by candidate", function(err, rows, header){
+	connection.query("SELECT trips.candidate, candidates.party, places.city, trips.state, accompanied_by, notes, DATE_FORMAT(MAX(start), '%Y-%m-%d') as start \
+		FROM trips \
+		JOIN candidates on candidates.name=trips.candidate \
+		JOIN ( SELECT tripid, placeid FROM stops GROUP BY tripid ) as stops on stops.tripid = trips.tripid \
+		JOIN places on stops.placeid=places.id \
+		GROUP BY candidate ORDER BY candidate", 
+	function(err, rows, header){	
 		if(err) throw err;
-		
 		rows.forEach(function(candidate){
 			pending++;
+			
+			// Get state by state count
 			connection.query("select state, count(state) as count from trips WHERE candidate=? GROUP BY state order by count DESC limit 5", [candidate.candidate], function(err, trips, header){
 				if(err) throw err;
 				pending--;

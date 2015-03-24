@@ -22,7 +22,7 @@
 						{{candidate.name}} ({{candidate.party}})
 					</td>
 					<td>
-						<div class="portrait" style="background-image: url('assets/{{imageURL(candidate.name)}}')"></div>
+						<div class="portrait" style="background-image: url('assets/{{imageURL(candidate.name)}}'); background-color: {{candidate.color}}"></div>
 						<div class="verticalLine"></div>
 					</td>
 				</tr>
@@ -38,9 +38,9 @@
 				</thead>
 				<tr>
 					<td>
-						<h3 style="color: {{candidate.color}}">{{candidate.total}}</h3>
+						<h3 style="color: white">{{candidate.total}}</h3>
 					</td>
-					<td>{{}}</td>
+					<td>{{candidate["last-seen"].city}}, {{candidate["last-seen"].state}}</td>
 				</tr>
 			</table>
 			
