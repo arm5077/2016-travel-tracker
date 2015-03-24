@@ -35,7 +35,7 @@ app.get("/trips", function(request, response){
 		params += " AND start >=" + connection.escape(moment( request.query.start ).format("YYYY-MM-DD")); 
 	if( request.query.end )
 		params += " AND end <=" + connection.escape(moment( request.query.end ).format("YYYY-MM-DD"));
-	if( request.query.state )	
+	if( request.query.state && request.query.state != "*" )	
 		params += " AND state = " + connection.escape( request.query.state );
 	if( request.query.candidates) {
 		params += " AND (";
@@ -53,20 +53,25 @@ app.get("/trips", function(request, response){
 	connection.query(query_string, function(err, rows, header){
 		if( err ) throw err;
 		
-		var queryCount = 0;
-		rows.forEach(function(trip){
-			queryCount++; 
-			connection.query("SELECT stops.id, places.id as placeid, places.city, places.state, places.lat, places.lng FROM stops JOIN places ON stops.placeid = places.id WHERE tripid = ? ORDER BY stops.id ASC", [trip.tripid], function(err, stops, header){
-				if( err ) throw err;
-				trip.stops = stops;
-				queryCount--;
-				if( queryCount == 0 ) {
-					response.status(200).json({ count: rows.length, results: rows, params: request.query });
-					connection.end();
-				}
+		if( rows.length == 0 ){
+			response.status(200).json({ count: rows.length, results: rows, params: request.query });
+			connection.end();
+		}
+		else {
+			var queryCount = 0;
+			rows.forEach(function(trip){
+				queryCount++; 
+				connection.query("SELECT stops.id, places.id as placeid, places.city, places.state, places.lat, places.lng FROM stops JOIN places ON stops.placeid = places.id WHERE tripid = ? ORDER BY stops.id ASC", [trip.tripid], function(err, stops, header){
+					if( err ) throw err;
+					trip.stops = stops;
+					queryCount--;
+					if( queryCount == 0 ) {
+						response.status(200).json({ count: rows.length, results: rows, params: request.query });
+						connection.end();
+					}
+				});
 			});
-		});
-		
+		}
 		
 	});
 	

@@ -19,6 +19,8 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 	];
 	
 	$scope.moment = moment;
+	$scope.states = states;
+	$scope.search = false;
 	
 	// Initialize map
 	var map = L.map('map', {
@@ -53,6 +55,7 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 		$scope.params.start = new Date( $scope.params.start );
 		$scope.params.end = $scope.params.end || new Date();
 		$scope.params.end = new Date( $scope.params.end );
+		$scope.params.state = $scope.params.state || "*";
 		
 		console.log($scope.params);
 		

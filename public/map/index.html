@@ -88,18 +88,44 @@
 		</ul>
 	</div>
 	<map id="map">
-		<div class="search">
+		<div class = "searchButton" ng-show="!search" ng-click="search=true">
+			<i class="fa fa-search"></i>
+		</div>
+		<div class="search" ng-show="search">
 			<form>
-				<i class="fa fa-calendar"></i>
-				<input type="date" ng-model="params.start"></input>
-				<input type="date" ng-model="params.end"></input>
+				<table>
+					<tr>
+						<td>
+							<i class="fa fa-calendar"></i>
+						</td>
+						<td>
+							<input type="date" ng-model="params.start"></input>
+							<label>to</label>
+							<input type="date" ng-model="params.end"></input>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<i class="fa fa-map-marker"></i>
+						</td>
+						<td>
+							<select ng-model="params.state">
+								<option ng-repeat="state in states" value="{{state.state}}">{{state.Name}}</option>
+							</select>
+						</td>
+					</tr>
+				</table>
+
 				<button ng-click="submit()">Go</button>
+				<button class = "hide" ng-click="search=false">Hide</button>
+				
 			</form>
 		</div>
 		
 	</map>
 </body>
 
+<script src="states.js"></script>
 <script src="app.js"></script>
 
 </html>
