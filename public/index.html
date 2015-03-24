@@ -16,14 +16,31 @@
 	<ul class="candidates">
 		<li class="candidate" ng-repeat="candidate in candidates">
 			<div class = "bar" style="background-color:{{candidate.color}}"></div>
-			<table>
+			<table class= "bio">
 				<tr>
 					<td class="name">
 						{{candidate.name}} ({{candidate.party}})
 					</td>
 					<td>
 						<div class="portrait" style="background-image: url('assets/{{imageURL(candidate.name)}}')"></div>
+						<div class="verticalLine"></div>
 					</td>
+				</tr>
+			</table>
+			
+			<table class="stats">
+				<thead>
+					<tr>
+						<th>Total trips</th>
+						<th>Last seen</th>
+						<th>Most frequently visited states</th>
+					</tr>
+				</thead>
+				<tr>
+					<td>
+						<h3 style="color: {{candidate.color}}">{{candidate.total}}</h3>
+					</td>
+					<td>{{}}</td>
 				</tr>
 			</table>
 			

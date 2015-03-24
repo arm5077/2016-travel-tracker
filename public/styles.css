@@ -1,7 +1,12 @@
-@import url(http://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700);
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900);
 
 html, body {
 	font-family: Roboto, Helvetica, sans-serif;
+	margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin:0;
 }
 
 ul.candidates {
@@ -14,6 +19,7 @@ ul.candidates {
 	ul.candidates li{
 		height: 100px;
 		background-color: #444;
+		border-top: 1px solid #aaa;
 	}
 	
 	
@@ -23,25 +29,58 @@ ul.candidates {
 	float:left;
 }
 
-li.candidate > table {
+table.bio {
 	height:100%;
 	float: left;
+	//border-right: 1px solid #eee;
 }
 
-td.name {
-	font-size: 16pt;
-	  font-weight: 500;
-	  color: rgba(255,255,255,.9);
-	  width: 200px;
-	  padding-left: 16px;
-}
+	table.bio td.name {
+		font-size: 16pt;
+		  font-weight: 500;
+		  color: rgba(255,255,255,.9);
+		  width: 200px;
+		  padding-left: 16px;
+	}
 
-.portrait {
-	width: 75px;
-	height: 75px;
-	border-radius: 50%;
-	background-size: cover;
-	background-position: center;
-	background-color: #eee;
-	border: 2px solid #eee;
+	table.bio .portrait {
+		width: 75px;
+		height: 75px;
+		border-radius: 50%;
+		background-size: cover;
+		background-position: center;
+		background-color: #eee;
+		border: 2px solid #eee;
+		display: inline-block;
+	}
+
+	table.bio .verticalLine {
+		height: 75px;
+		margin: 0px 30px;
+		background-color: #eee;
+		width: 1px;
+		display:inline-block;
+	}
+
+table.stats {
+	height: 100%;
 }
+	table.stats th {
+		color: rgba(255,255,255,.9);
+		font-weight:500;
+	}
+	
+	table.stats thead tr {
+		height:33px;
+	}
+	
+	table.stats tr td {
+		vertical-align: middle;
+	}
+	
+	table.stats h3 {
+		font-size: 38pt;
+		text-align: center;
+		font-weight: 700;
+		line-height:1em;
+	}
