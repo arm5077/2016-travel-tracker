@@ -14,12 +14,44 @@ app.listen(port, function(){
 	console.log("We're live at port " + port + ".");
 });
 
+// Set up static page (main page)
+app.use("/", express.static(__dirname + "/public/"));
+
 // Set up static page (map screen)
 app.use("/map", express.static(__dirname + '/public/map'));
 
 // Assets endpoint
 app.use("/assets", express.static(__dirname + '/public/assets'));
 
+app.get("/candidates", function(request, response){
+	var results = [];
+	var pending = 0;
+	var connection = connectMySQL();
+
+	connection.query("SELECT trips.candidate, candidates.party, state, accompanied_by, notes, DATE_FORMAT(MAX(start), '%Y-%m-%d') as start from trips JOIN candidates on candidates.name=trips.candidate group by candidate order by candidate", function(err, rows, header){
+		if(err) throw err;
+		
+		rows.forEach(function(candidate){
+			pending++;
+			connection.query("select state, count(state) as count from trips WHERE candidate=? GROUP BY state order by count DESC limit 5", [candidate.candidate], function(err, trips, header){
+				if(err) throw err;
+				pending--;
+				pending++;
+				connection.query("SELECT candidate, COUNT(*) as trips FROM trips WHERE candidate = ?", [candidate.candidate], function(err, count, header){
+					pending--;
+					results.push({"name": candidate.candidate, party: candidate.party, total: count[0].trips, "last-seen": candidate, "most-visited": trips});
+					if(pending == 0) response.status(200).json({ count: rows.length, results: results });
+				});
+			
+				
+			});
+		});
+		
+		
+		
+	});
+	
+});
 
 app.get("/trips", function(request, response){
 	

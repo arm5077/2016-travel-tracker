@@ -1,0 +1,47 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700);
+
+html, body {
+	font-family: Roboto, Helvetica, sans-serif;
+}
+
+ul.candidates {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	
+}
+
+	ul.candidates li{
+		height: 100px;
+		background-color: #444;
+	}
+	
+	
+.bar {
+	height: 100%;
+	width: 15px;
+	float:left;
+}
+
+li.candidate > table {
+	height:100%;
+	float: left;
+}
+
+td.name {
+	font-size: 16pt;
+	  font-weight: 500;
+	  color: rgba(255,255,255,.9);
+	  width: 200px;
+	  padding-left: 16px;
+}
+
+.portrait {
+	width: 75px;
+	height: 75px;
+	border-radius: 50%;
+	background-size: cover;
+	background-position: center;
+	background-color: #eee;
+	border: 2px solid #eee;
+}

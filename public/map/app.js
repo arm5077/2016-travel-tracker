@@ -1,4 +1,4 @@
-app = angular.module("travelApp", []);
+app = angular.module("mapApp", []);
 
 // Configure $location and set to HTML5 mode
 app.config(['$locationProvider', function($locationProvider) {
@@ -8,7 +8,7 @@ app.config(['$locationProvider', function($locationProvider) {
 		});
     }]);
 
-app.controller("travelController", ["$scope", "$http", "$location", function($scope, $http, $location){
+app.controller("mapController", ["$scope", "$http", "$location", function($scope, $http, $location){
 	
 	$scope.colors = [
 		"#145786",
