@@ -169,7 +169,7 @@ app.directive("map", function(){
 		
 		function resize(){
 			element.css({
-				height: Math.min((window.innerHeight * .8 ),700) + "px"
+				height: Math.min((window.innerHeight * .8 ), 450) + "px"
 			});
 		}
 	}
