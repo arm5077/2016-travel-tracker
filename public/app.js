@@ -15,6 +15,11 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 	$scope.chartHeight = 60;
 	$scope.mapString = "";
 	$scope.selectedCandidates = [];
+	$scope.start = moment().subtract(7,'days');
+	$scope.end = new Date();
+	$scope.state = "*";
+	$scope.search = true;
+	$scope.states = states;
 	
 	$http({
 		url: "/candidates",
@@ -116,7 +121,7 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 		
 		colorString = colorString.slice(0,-1);
 		
-		$scope.mapString = "?candidates=" + candidateString + "&colors=" + colorString;
+		$scope.mapString = "?candidates=" + candidateString + "&colors=" + colorString + "&standalone=false";
 	}
 	
 	$scope.expandAll = function(){

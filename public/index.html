@@ -9,6 +9,9 @@
 	<!-- Pym -->
 	<script src="https://s3-us-west-2.amazonaws.com/nationaljournal/libraries/pym.js"></script>
 
+	<!-- Moment.js -->
+	 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.js"></script>
+	
 	<!-- Fontawesome -->
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 	
@@ -19,7 +22,44 @@
 
 <body ng-controller="travelController">
 	
-	<iframe map id="map" ng-src="{{ makeURL(params) }}"></iframe>
+	<div class id="map" map>
+		<iframe ng-src="{{ makeURL(params) }}"></iframe>
+		
+		<div class = "searchButton" ng-show="!search" ng-click="search=true">
+			<i class="fa fa-search"></i>
+		</div>
+		<div class="search" ng-show="search">
+			<form>
+				<table>
+					<tr>
+						<td>
+							<i class="fa fa-calendar"></i>
+						</td>
+						<td>
+							<input type="date" ng-model="start"></input>
+							<label>to</label>
+							<input type="date" ng-model="end"></input>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<i class="fa fa-map-marker"></i>
+						</td>
+						<td>
+							<select ng-model="state">
+								<option ng-repeat="state in states" value="{{state.state}}">{{state.Name}}</option>
+							</select>
+						</td>
+					</tr>
+				</table>
+
+				<button ng-click="submit()">Go</button>
+				<button class = "hide" ng-click="search=false">Hide</button>
+				
+			</form>
+		</div>
+		
+	</div>
 	
 	<div class = "buttons">
 		<button ng-click="selectAll()">Select all</button>
@@ -74,6 +114,7 @@
 	
 </body>
 
+<script src="states.js"></script>
 <script src="colors.js"></script>
 <script type="text/javascript" src="app.js"></script>
 

@@ -59,6 +59,8 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 		$scope.params.end = $scope.params.end || new Date();
 		$scope.params.end = new Date( $scope.params.end );
 		$scope.params.state = $scope.params.state || "*";
+		
+		$scope.standalone = $scope.params.standalone || true;
 	
 		
 		$scope.data = data.results;

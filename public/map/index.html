@@ -92,10 +92,10 @@
 		</ul>
 	</div>
 	<map id="map">
-		<div class = "searchButton" ng-show="!search" ng-click="search=true">
+		<div class = "searchButton" ng-show="!search && standalone==true" ng-click="search=true">
 			<i class="fa fa-search"></i>
 		</div>
-		<div class="search" ng-show="search">
+		<div class="search" ng-show="search && standalone==true">
 			<form>
 				<table>
 					<tr>
