@@ -15,25 +15,45 @@ h1, h2, h3, h4, h5, h6 {
 #map {
 	width: 100%;
 	border:0;
-	margin: 0;
+	margin: 0 0 20px 0;
 }
 
+.buttons {
+	text-align: right;
+	margin-bottom: 10px;
+}
+	
+	.buttons button {
+		border: 1px solid #555;
+		background-color:#444;
+		padding: 5px 8px;
+		margin-right:10px;
+	}
 
+		.buttons button:hover{
+			cursor:pointer;
+			border: 1px solid #888;
+			background
+		}
+	
 ul.candidates {
 	padding: 0;
 	margin: 0;
 	list-style: none;
-	margin-top:50px;
 }
 
 	ul.candidates li{
 		height: 150px;
 		background-color: #444;
-		border-top: 1px solid #aaa;
+		border-top: 1px solid rgba(255,255,255,.2);
 		transition: background-color .25s;
 		overflow: hidden;
 	}
-
+	
+		ul.candidates li.selected {
+			background-color: #222;
+		}
+		
 		ul.candidates li:hover{
 			cursor:pointer;
 			background-color: #333;
@@ -69,10 +89,10 @@ table.bio {
 }
 
 	table.bio td.name {
-		font-size: 16pt;
+		font-size: 14pt;
 		  font-weight: 100;
 		  color: rgba(255,255,255,.9);
-		  width: 200px;
+		  width: 155px;
 		  padding-left: 16px;
 	}
 
@@ -91,7 +111,7 @@ table.bio {
 	.verticalLine {
 		height: 120px;
 		margin: 15px 30px 0px;
-		background-color: #eee;
+		background-color: rgba(255,255,255,.2);
 		width: 1px;
 		display:inline-block;
 		float: left;

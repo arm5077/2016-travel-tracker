@@ -15,8 +15,15 @@
 	
 	<iframe map id="map" ng-src="{{ makeURL(params) }}"></iframe>
 	
+	<div class = "buttons">
+		<button ng-click="selectAll()">Select all</button>
+		<button ng-click="unselectAll()">Unselect all</button>
+		<button ng-click="expandAll()">Expand all</button>
+		<button ng-click="collapseAll()">Collapse all</button>
+	</div>
+	
 	<ul class="candidates">
-		<li class="candidate" ng-repeat="candidate in candidates" ng-class="{closed: candidate.closed == true}" ng-click="candidate.closed = !candidate.closed">
+		<li class="candidate" ng-repeat="candidate in candidates" ng-class="{closed: candidate.closed == true, selected: candidate.selected == true}" ng-click="handleCandidateClick(candidate)">
 			<div class = "bar" style="background-color:{{candidate.color}}"></div>
 			<table class= "bio">
 				<tr>

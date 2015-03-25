@@ -13,6 +13,8 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 	$scope.padding = .1;
 	$scope.minHeight = 10;
 	$scope.chartHeight = 60;
+	$scope.mapString = "";
+	$scope.selectedCandidates = [];
 	
 	$http({
 		url: "/candidates",
@@ -21,9 +23,17 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 	}).success(function(data, status, headers, config){
 		$scope.candidates = data.results;
 		
+		// Order candidates by most trips
+		$scope.candidates.sort(function(a,b){  return Math.max.apply(null, b["most-visited"].map(function(d){ return d.count }) ) - Math.max.apply(null, a["most-visited"].map(function(d){ return d.count }) ) });
+		
+		// Set initialization for candidates
 		$scope.candidates.forEach(function(candidate){ 
 			candidate.closed=true; 
+			candidate.selected = true;
+			$scope.selectedCandidates.push(candidate);
 		});
+		
+
 		
 		$scope.max = Math.max.apply(null, $scope.candidates.map(function(d){ return Math.max.apply(null, d["most-visited"].map(function(d){ return d.count; }))  }));
 		
@@ -31,6 +41,8 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 		$scope.candidates.forEach(function(candidate, i){
 			candidate.color = colors[i];
 		});
+		
+		$scope.createURLString();
 				
 	}).error(function(err){
 		console.log("Error getting data: " + err);
@@ -70,9 +82,71 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 	};
 
 	$scope.makeURL = function(params){
-		return $sce.trustAsResourceUrl("/map");
+		return $sce.trustAsResourceUrl("/map" + $scope.mapString);
 	};
 	
+	$scope.handleCandidateClick = function(candidate){
+		var obj = {name: candidate.name, color: candidate.color};
+		console.log("Looking at " + candidate.name);
+		if( candidate.selected ){
+			
+			console.log( $scope.selectedCandidates.map(function(c){ return c.name }).indexOf(candidate.name) );
+			index = $scope.selectedCandidates.map(function(c){ return c.name }).indexOf(candidate.name)
+						
+			$scope.selectedCandidates.splice( index, 1);
+			
+		} else {
+			$scope.selectedCandidates.push(obj);
+		}
+		
+		$scope.createURLString();
+		
+		candidate.selected = !candidate.selected;
+	};
+	
+	$scope.createURLString = function(){
+		$scope.mapString = "";
+		var candidateString = "";
+		var colorString = "";
+		
+		$scope.selectedCandidates.forEach(function(candidateObj){
+			candidateString += candidateObj.name.replace(" ","") +",";
+			colorString += candidateObj.color.replace("#","") +",";
+		});
+		
+		colorString = colorString.slice(0,-1);
+		
+		$scope.mapString = "?candidates=" + candidateString + "&colors=" + colorString;
+	}
+	
+	$scope.expandAll = function(){
+		$scope.candidates.forEach(function(candidate){ 
+			candidate.closed=false; 
+		});
+	}
+	
+	$scope.collapseAll = function(){
+		$scope.candidates.forEach(function(candidate){ 
+			candidate.closed=true; 
+		});
+	}
+	
+	$scope.selectAll = function(){
+		$scope.selectedCandidates = [];
+		$scope.candidates.forEach(function(candidate){ 
+			candidate.selected = true;
+			$scope.selectedCandidates.push(candidate);
+		});
+		$scope.createURLString();
+	}
+	
+	$scope.unselectAll = function(){
+		$scope.selectedCandidates = [];
+		$scope.candidates.forEach(function(candidate){ 
+			candidate.selected = false;
+		});
+		$scope.createURLString();
+	}
 	
 }]);
 

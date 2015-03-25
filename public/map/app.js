@@ -10,12 +10,15 @@ app.config(['$locationProvider', function($locationProvider) {
 
 app.controller("mapController", ["$scope", "$http", "$location", function($scope, $http, $location){
 	
-	$scope.colors = [
-		"#145786",
-		"#952226",
-		"#B5A99B",
-		"#FAA61A",
-		"#2B7064"
+	$scope.defaultColors = [
+		"#dc4239",
+		"#e3c009",
+		"#72a199",
+		"#2473b1",
+		"#e97f83",
+		"#60b7b9",
+		"#c2b49a",
+		"#bcbc5a"
 	];
 	
 	$scope.moment = moment;
@@ -41,6 +44,9 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 			opacity: 0
 		}).addTo(map);
 	
+	
+	
+	
 	// Pull in parameters and make API request
 	$scope.parameters = $location.search();
 	$http({
@@ -50,18 +56,16 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 	}).success(function(data, status, headers, config){
 				
 		$scope.params = data.params;
-		
-		$scope.params.start = $scope.params.start || "2014-01-01";
+
+		$scope.params.start = $scope.params.start || moment().subtract(7,'days');
 		$scope.params.start = new Date( $scope.params.start );
 		$scope.params.end = $scope.params.end || new Date();
 		$scope.params.end = new Date( $scope.params.end );
 		$scope.params.state = $scope.params.state || "*";
-		
-		console.log($scope.params);
+	
 		
 		$scope.data = data.results;
 		
-		console.log($scope.data);
 		
 		$scope.count = data.count;
 		
@@ -73,7 +77,23 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 			$scope.candidates[trip.candidate].push(trip);
 		});
 		
-		var currentColor = 0;
+		if( $scope.params.colors ){
+			$scope.colors = {};
+			$scope.params.colors.split(",").forEach(function(color, index){
+				$scope.colors[ $scope.params.candidates.split(",")[index] ] = "#" + color;
+			});
+		}
+		else {
+			$scope.colors = {};
+			var currentColor = 0;
+			for(name in $scope.candidates){
+				if( currentColor >= $scope.defaultColors.length)
+					currentColor = 0;
+				$scope.colors[name.replace(" ","")] = $scope.defaultColors[currentColor];
+				currentColor++;
+			};
+		}
+
 		var markers = new L.MarkerClusterGroup({
 			maxClusterRadius: 40,
 			spiderfyDistanceMultiplier: 3,
@@ -89,7 +109,6 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 							unique[clusterColor] = "color added!";
 					}
 				});
-				console.log(clusterColors);
 				
 				boxesHTML = "";
 				clusterColors.forEach(function(clusterColor){
@@ -103,12 +122,8 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 		for( name in $scope.candidates ){
 			if( $scope.candidates.hasOwnProperty(name) ){
 			
-				if( currentColor < ($scope.colors.length -1) )
-					currentColor++;
-				else
-					currentColor = 0; 
-				
-				$scope.candidates[name].color = $scope.colors[currentColor];
+			
+				$scope.candidates[name].color = $scope.colors[name.replace(" ","")];
 		
 				lastLatLng = [];
 				
@@ -145,7 +160,7 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 							}).addTo(map);
 							*/
 							
-							addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[currentColor], 10, markers);
+							addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[name.replace(" ","")], 10, markers);
 						
 						} else {
 							lastLatLng = [trip.stops[i].lat, trip.stops[i].lng];
@@ -168,7 +183,7 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 								markers.addLayer(marker);
 							
 							} else {
-							*/	addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[currentColor], 10, markers);
+							*/	addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[name.replace(" ","")], 10, markers);
 							//}
 						}
 					}
@@ -226,7 +241,6 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 		    }
 		    url += key + "=" + encodeURIComponent($scope.params[key]);
 		}
-		console.log(url);
 		window.location = "/map/?" + url;
 	};
 	
