@@ -5,11 +5,19 @@ html, body {
 	font-family: Roboto, Helvetica, sans-serif;
 	margin: 0;
 	color:rgba(255,255,255,.9);
+	background-color: #222;
 }
 
 h1, h2, h3, h4, h5, h6 {
 	margin:0;
 }
+
+#map {
+	width: 100%;
+	border:0;
+	margin: 0;
+}
+
 
 ul.candidates {
 	padding: 0;
@@ -23,16 +31,34 @@ ul.candidates {
 		background-color: #444;
 		border-top: 1px solid #aaa;
 		transition: background-color .25s;
+		overflow: hidden;
 	}
 
 		ul.candidates li:hover{
 			cursor:pointer;
 			background-color: #333;
 		}
+
+	ul.candidates li.closed {
+		height: 50px;
+	}
+	
+		.closed .portrait{
+			margin-top: -100px;
+			opacity: 0;
+		}
+		
+		.closed .verticalLine {
+			opacity: 0;
+		}
+	
+		.closed .stats {
+			opacity: 0;
+		}
 	
 .bar {
 	height: 100%;
-	width: 15px;
+	width: 10px;
 	float:left;
 }
 
@@ -59,6 +85,7 @@ table.bio {
 		background-color: #eee;
 		border: 2px solid #eee;
 		display: inline-block;
+		transition: .25s all;
 	}
 
 	.verticalLine {
@@ -68,10 +95,12 @@ table.bio {
 		width: 1px;
 		display:inline-block;
 		float: left;
+		transition: .25s ease;
 	}
 
 table.stats {
 	height: 100%;
+	transition: .25s ease;
 }
 	table.stats th {
 		color: rgba(255,255,255,.9);

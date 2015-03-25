@@ -8,7 +8,7 @@ app.config(['$locationProvider', function($locationProvider) {
 		});
     }]);
 
-app.controller("travelController", ["$scope", "$http", "$location", function($scope, $http, $location){
+app.controller("travelController", ["$scope", "$http", "$location", "$sce", function($scope, $http, $location, $sce){
 	$scope.parameters = $location.search();
 	$scope.padding = .1;
 	$scope.minHeight = 10;
@@ -20,6 +20,10 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 		params: $scope.parameters
 	}).success(function(data, status, headers, config){
 		$scope.candidates = data.results;
+		
+		$scope.candidates.forEach(function(candidate){ 
+			candidate.closed=true; 
+		});
 		
 		$scope.max = Math.max.apply(null, $scope.candidates.map(function(d){ return Math.max.apply(null, d["most-visited"].map(function(d){ return d.count; }))  }));
 		
@@ -65,6 +69,10 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 		return index * $scope.barWidth(data) + (index * $scope.padding * (100 / (4 ) ) );
 	};
 
+	$scope.makeURL = function(params){
+		return $sce.trustAsResourceUrl("/map");
+	};
+	
 	
 }]);
 
@@ -80,3 +88,15 @@ app.directive("bar", function() {
 
 });
 
+app.directive("map", function(){
+	return function(scope, element, attr){
+		resize();
+		angular.element(window).on("resize", resize);
+		
+		function resize(){
+			element.css({
+				height: (window.innerHeight * .8 ) + "px"
+			});
+		}
+	}
+});

@@ -13,8 +13,10 @@
 
 <body ng-controller="travelController">
 	
+	<iframe map id="map" ng-src="{{ makeURL(params) }}"></iframe>
+	
 	<ul class="candidates">
-		<li class="candidate" ng-repeat="candidate in candidates">
+		<li class="candidate" ng-repeat="candidate in candidates" ng-class="{closed: candidate.closed == true}" ng-click="candidate.closed = !candidate.closed">
 			<div class = "bar" style="background-color:{{candidate.color}}"></div>
 			<table class= "bio">
 				<tr>
