@@ -34,6 +34,10 @@
 
 <body ng-controller="mapController">
 	<div id="rail">
+		<div class = "intro">
+			<h2>2016 Travel Tracker</h2>
+			<p>Travel Tracker covers trips current and potential presidential candidates made outside of their home states after Nov. 4, 2014. The database is compiled from press releases and news articles.</p>
+		</div>
 		<div class="total" ng-bind="count + ' trips'"></div>
 		<ul class="events">
 			<li ng-repeat="trip in data" ng-click="clickTrip(trip)" id="{{trip.tripid}}" ng-class="{selected: trip.selected == true }" ng-mouseOver="moveTarget(trip, candidates[trip.candidate].color)" ng-mouseLeave="clearTarget()">

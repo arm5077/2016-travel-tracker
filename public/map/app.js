@@ -23,7 +23,7 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 	
 	$scope.moment = moment;
 	$scope.states = states;
-	$scope.search = false;
+	$scope.search = true;
 	
 	// Initialize map
 	var map = L.map('map', {
@@ -43,9 +43,6 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 			radius: 50,
 			opacity: 0
 		}).addTo(map);
-	
-	
-	
 	
 	// Pull in parameters and make API request
 	$scope.parameters = $location.search();
