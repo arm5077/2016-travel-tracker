@@ -45,8 +45,8 @@
 					<td class="last-seen"><h4>{{candidate["last-seen"].city}}, {{candidate["last-seen"].state}}</h4></td>
 					
 					<td class="chart">
-						<div class = "chartContainer">
-							<bar ng-repeat="state in candidate['most-visited']" state="{{state.state}}" ng-style="{width: barWidth(candidate['most-visited']) + '%', height: barHeight(state.count, candidate['most-visited']) + 'px', top: barTop(state.count, candidate['most-visited']) + 'px', left: barLeft(state.state, candidate['most-visited']) + '%', 'background-color': candidate.color}">{{ state.count }}</bar>
+						<div class = "chartContainer" height="{{chartHeight}}">
+							<bar ng-class="{toosmall: barHeight(state.count, candidate['most-visited']) <= 20}" ng-repeat="state in candidate['most-visited']" count="{{state.count}}" state="{{state.state}}" ng-style="{width: barWidth(candidate['most-visited']) + '%', height: barHeight(state.count, candidate['most-visited']) + 'px', top: barTop(state.count, candidate['most-visited']) + 'px', left: barLeft(state.state, candidate['most-visited']) + '%', 'background-color': candidate.color}">{{ (barHeight(state.count, candidate['most-visited']) > 20 ) ? state.count : "" }}</bar>
 						</div>
 					</td>
 				

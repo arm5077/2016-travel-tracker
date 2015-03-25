@@ -138,7 +138,7 @@ table.stats {
 			text-shadow: none;
 			font-size:14pt;
 			transition: .25s all;
-			line-height:2em;
+			line-height:1.5em;
 		}
 		
 		
@@ -151,3 +151,13 @@ table.stats {
 			text-align:center;
 			left:0;
 			font-size:12pt;
+		}
+		
+		.chart bar.toosmall:before {
+			content: attr(count);
+			position:absolute;
+			top: -26px;
+			left:0;
+			text-align:center;
+			width:100%;
+		}
