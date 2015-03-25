@@ -47,9 +47,10 @@ app.get("/candidates", function(request, response){
 				connection.query("SELECT candidate, COUNT(*) as trips FROM trips WHERE candidate = ?", [candidate.candidate], function(err, count, header){
 					pending--;
 					results.push({"name": candidate.candidate, party: candidate.party, total: count[0].trips, "last-seen": candidate, "most-visited": trips});
-					if(pending == 0) {
-						response.status(200).json({ count: rows.length, results: results });
+					if(pending <= 0) {
+						console.log("closing connection");
 						connection.end();
+						response.status(200).json({ count: rows.length, results: results });
 					}
 				});		
 			});
@@ -67,10 +68,12 @@ app.get("/trips", function(request, response){
 	console.log(request.query);
 	
 	// As of now, you need to specify a candidate to search for
-	if( !request.query.candidates )
+	if( !request.query.candidates ){
+		connection.end()
+		console.log("closing connection");
 		response.status(200).json({ count: 0, results: [], params: request.query });
+	}
 	else {
-		
 		// Handle query parameters
 		if( request.query.start ){
 			params += " AND start >=" + connection.escape(moment( request.query.start ).format("YYYY-MM-DD")); 
@@ -99,8 +102,10 @@ app.get("/trips", function(request, response){
 			if( err ) throw err;
 
 			if( rows.length == 0 ){
-				response.status(200).json({ count: rows.length, results: rows, params: request.query });
 				connection.end();
+				response.status(200).json({ count: rows.length, results: rows, params: request.query });
+				console.log("closing connection");
+
 			}
 			else {
 				var queryCount = 0;
@@ -110,9 +115,10 @@ app.get("/trips", function(request, response){
 						if( err ) throw err;
 						trip.stops = stops;
 						queryCount--;
-						if( queryCount == 0 ) {
-							response.status(200).json({ count: rows.length, results: rows, params: request.query });
+						if( queryCount <= 0 ) {
 							connection.end();
+							console.log("closing connection");
+							response.status(200).json({ count: rows.length, results: rows, params: request.query });
 						}
 					});
 				});

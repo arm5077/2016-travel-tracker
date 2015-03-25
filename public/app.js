@@ -50,7 +50,7 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 	
 	
 	$scope.imageURL = function(name){
-		return name.replace(" ", "").toLowerCase() + ".png";
+		return name.replace(" ", "").toLowerCase().replace("'","") + ".png";
 	}
 	
 	$scope.barWidth = function(data) {
