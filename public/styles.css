@@ -69,6 +69,7 @@ table.stats {
 	table.stats th {
 		color: rgba(255,255,255,.9);
 		font-weight:500;
+		text-align:Center;
 	}
 	
 	table.stats thead tr {
@@ -87,4 +88,27 @@ table.stats {
 		font-family: "Open Sans", Helvetica, sans-serif;
 		position: relative;
 	  	top: -10px;	
+		display: inline-block;
 	}
+	
+	.stats .total {
+
+		text-align:center;
+		min-width:100px;
+		padding: 0px 25px;
+	}
+	
+	.stats .last-seen {
+		min-width:150px;
+		text-align:center;
+		color: rgba(255,255,255,.9);
+		padding: 0px 25px;
+	}
+	
+		.stats .last-seen h4 {
+			font-size: 15pt;
+			font-weight:400;
+			position:relative;
+			top: -10px;
+		}
+		}
