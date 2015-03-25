@@ -305,6 +305,7 @@ function connectMySQL(){
 	// Open connection to mySQL database
 	var connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL || "mysql://root@localhost/travel");
 	connection.on("error", function(err){  
+		connection.end();
 		 return setTimeout(function(){ return connectMySQL() },3000);
 	});
 
