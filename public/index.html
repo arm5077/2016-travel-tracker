@@ -9,6 +9,9 @@
 	<!-- Pym -->
 	<script src="https://s3-us-west-2.amazonaws.com/nationaljournal/libraries/pym.js"></script>
 
+	<!-- Fontawesome -->
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	
 	<!-- Site styles -->
 	<link rel="stylesheet" href="styles.css" />	
 	
@@ -27,6 +30,7 @@
 	
 	<ul class="candidates">
 		<li class="candidate" ng-repeat="candidate in candidates" ng-class="{closed: candidate.closed == true, selected: candidate.selected == true}" ng-click="handleCandidateClick(candidate)">
+			<div class="toggle"><i class="fa fa-plus-circle" ng-show="candidate.closed" ng-click="candidate.closed = false; $event.stopPropagation()"></i><i class="fa fa-minus-circle" ng-show="!candidate.closed" ng-click="candidate.closed = true; $event.stopPropagation()"></i></div>
 			<div class = "bar" style="background-color:{{candidate.color}}"></div>
 			<table class= "bio">
 				<tr>

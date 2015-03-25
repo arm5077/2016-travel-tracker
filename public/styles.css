@@ -48,6 +48,7 @@ ul.candidates {
 		border-top: 1px solid rgba(255,255,255,.2);
 		transition: background-color .25s;
 		overflow: hidden;
+		position:relative;
 	}
 	
 		ul.candidates li.selected {
@@ -75,6 +76,14 @@ ul.candidates {
 		.closed .stats {
 			opacity: 0;
 		}
+		
+.toggle{
+	color: #555;
+	position:absolute;
+	top: 12px;
+	right:10px;
+	font-size:18pt;
+}
 	
 .bar {
 	height: 100%;
