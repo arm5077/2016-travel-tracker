@@ -22,8 +22,13 @@ ul.candidates {
 		height: 150px;
 		background-color: #444;
 		border-top: 1px solid #aaa;
+		transition: background-color .25s;
 	}
-	
+
+		ul.candidates li:hover{
+			cursor:pointer;
+			background-color: #333;
+		}
 	
 .bar {
 	height: 100%;
@@ -139,6 +144,7 @@ table.stats {
 			font-size:14pt;
 			transition: .25s all;
 			line-height:1.5em;
+			vertical-align:bottom;
 		}
 		
 		
@@ -161,3 +167,55 @@ table.stats {
 			text-align:center;
 			width:100%;
 		}
+		
+@media screen and (max-width: 1040px) {
+	table.stats .total h3 {
+		font-size: 23pt;
+
+	}
+
+	table.stats .total {
+		min-width: 0;
+		width:auto;
+	}
+	
+	table.stats td { font-size: 11pt; }
+	
+	.stats .last-seen {
+		width:auto;
+		min-width:0;
+	}
+
+	table.bio td.name {
+		font-size:14pt;
+		width: 168px;
+	}
+
+}
+
+@media screen and (max-width: 900px) {
+	li.candidate {
+		height: auto;
+		text-align:center;
+	}
+
+	.stats td.chart, th.chart {
+		display:none;
+	}
+	
+	.verticalLine {
+		display:none;
+	}
+	
+	table.bio td.name {
+		padding-right:10px;
+		padding-left:0px;
+		text-align:right;
+	}
+	
+	table.bio .portrait {
+		width:40px;
+		height: 40px;
+	}
+	
+}

@@ -21,6 +21,8 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 	}).success(function(data, status, headers, config){
 		$scope.candidates = data.results;
 		
+		$scope.max = Math.max.apply(null, $scope.candidates.map(function(d){ return Math.max.apply(null, d["most-visited"].map(function(d){ return d.count; }))  }));
+		
 		// Assign colors
 		$scope.candidates.forEach(function(candidate, i){
 			candidate.color = colors[i];
@@ -43,7 +45,7 @@ app.controller("travelController", ["$scope", "$http", "$location", function($sc
 	$scope.barHeight = function(value, data){
 		//height = value / Math.max.apply(null, data.map(function(d){ return d.count })) * $scope.chartHeight;
 		//console.log(Math.max.apply(null, $scope.candidates.map(function(d){ return Math.max.apply(null, d["most-visited"].map(function(d){ return d.count; }))  })));
-		height = value / Math.max.apply(null, $scope.candidates.map(function(d){ return Math.max.apply(null, d["most-visited"].map(function(d){ return d.count; }))  })) * $scope.chartHeight;
+		height = value / $scope.max * $scope.chartHeight;
 		if( height < $scope.minHeight )
 			return $scope.minHeight;
 		else 
