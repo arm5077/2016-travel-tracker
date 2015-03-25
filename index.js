@@ -47,17 +47,14 @@ app.get("/candidates", function(request, response){
 				connection.query("SELECT candidate, COUNT(*) as trips FROM trips WHERE candidate = ?", [candidate.candidate], function(err, count, header){
 					pending--;
 					results.push({"name": candidate.candidate, party: candidate.party, total: count[0].trips, "last-seen": candidate, "most-visited": trips});
-					if(pending == 0) response.status(200).json({ count: rows.length, results: results });
-				});
-			
-				
+					if(pending == 0) {
+						response.status(200).json({ count: rows.length, results: results });
+						connection.end();
+					}
+				});		
 			});
-		});
-		
-		
-		
+		});	
 	});
-	
 });
 
 app.get("/trips", function(request, response){
@@ -157,20 +154,24 @@ app.get("/scrape", function(request, response){
 			var trips = makeObjectFromSpreadsheet(rows);
 
 			// Truncate all tables and reset to nothing
-			connection.query('TRUNCATE TABLE candidates', function(err, rows, header){ if( err ) throw err; });
-			connection.query('TRUNCATE TABLE stops', function(err, rows, header){ if( err ) throw err; });
-			connection.query('TRUNCATE TABLE trips;', function(err, rows, header){ if( err ) throw err; });
+			connection.query('TRUNCATE TABLE candidates', function(err, rows, header){ console.log("truncated candidates"); if( err ) throw err; });
+			connection.query('TRUNCATE TABLE stops', function(err, rows, header){ console.log("truncated stops"); if( err ) throw err; });
+			connection.query('TRUNCATE TABLE trips;', function(err, rows, header){ console.log("truncated trips");  if( err ) throw err; });
 
 			var added_cities = [];
-
+		
 			// Cycle through each "trip" row
 			trips.forEach(function(trip){
+				console.log(trip["First Name"]);
 				// This is my lil way of determining whether a row is undefined. There is probably a better way to do it.
 				if (trip["First Name"] && moment( trip["Start Date (mm/dd/yy)"] ) <= moment(new Date()) ){
 					
 					// Insert candidate name into database (unless already exists)
 					// But first, get rid of annoying extra spaces. Stupid Google Sheets. 
 					name = trip["First Name"].replace(/\s/g, '') + " " + trip["Last Name"].replace(/\s/g, '');
+					
+					console.log("Going after " + name);
+					
 					connection.query('INSERT IGNORE INTO candidates (name, party) VALUES (?,?);', [name, trip["Party (R or D)"]], function(err, info) {
 						if(err) throw err;
 					});

@@ -24,7 +24,7 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 		$scope.candidates = data.results;
 		
 		// Order candidates by most trips
-		$scope.candidates.sort(function(a,b){  return Math.max.apply(null, b["most-visited"].map(function(d){ return d.count }) ) - Math.max.apply(null, a["most-visited"].map(function(d){ return d.count }) ) });
+		$scope.candidates.sort(function(a,b){  return b.total - a.total });
 		
 		// Set initialization for candidates
 		$scope.candidates.forEach(function(candidate){ 
