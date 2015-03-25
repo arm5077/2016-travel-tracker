@@ -136,7 +136,7 @@ td {
 		}
 					
 		#rail ul.events > li.selected {
-
+			background-color: #333;
 		}
 		
 		
