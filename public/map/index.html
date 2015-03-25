@@ -50,7 +50,7 @@
 										<i class="fa fa-calendar"></i>
 									</td>
 									<td>
-										{{moment(trip.start).local().format("M/D/YYYY")}}
+										{{moment(trip.start).zone("+6:00").format("M/D/YYYY")}}
 									</td>
 								</tr>
 								<tr>
