@@ -1,5 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900);
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,800);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800);
 
 html, body {
 	font-family: Roboto, Helvetica, sans-serif;
@@ -58,8 +58,12 @@ ul.candidates {
 		
 		ul.candidates li:hover{
 			cursor:pointer;
-			background-color: #333;
+			background-color: #2d2d2d;
 		}
+		
+			ul.candidates li.selected:hover{
+				background-color: #3d3d3d;
+			}
 
 	ul.candidates li.closed {
 		height: 50px;
@@ -79,12 +83,32 @@ ul.candidates {
 		}
 		
 .toggle{
-	color: #555;
+	color: rgba(255,255,255,.7);
 	position:absolute;
 	top: 12px;
 	right:10px;
 	font-size:18pt;
 }
+
+	.toggle:hover{
+		color: rgba(255,255,255,.9);
+	}
+	
+	.toggle:before{
+		position: relative;
+		left: -10px;
+		top: -5px;
+		content: attr(text);
+		color: white;
+		font-size: 10pt;
+		color: rgba(255,255,255,.5);
+		opacity:0;
+		transition: .25s all;
+	}
+	
+	.toggle:hover:before{
+		opacity:1;
+	}
 	
 .bar {
 	height: 100%;
@@ -116,6 +140,7 @@ table.bio {
 		border: 2px solid #eee;
 		display: inline-block;
 		transition: .25s all;
+		  margin-left: 14px;
 	}
 
 	.verticalLine {
@@ -136,6 +161,7 @@ table.stats {
 		color: rgba(255,255,255,.9);
 		font-weight:500;
 		text-align:Center;
+		padding-top: 13px;
 	}
 	
 	table.stats thead tr {
@@ -174,8 +200,8 @@ table.stats {
 	}
 	
 		.stats .last-seen h4 {
-			font-size: 15pt;
-			font-weight:400;
+			font-size: 13pt;
+			font-weight:200;
 			position:relative;
 			top: -10px;
 		}
@@ -189,7 +215,7 @@ table.stats {
 		.stats .chart {
 			min-width:300px;
 			position:relative;
-			padding-top:10px;
+			padding-top:13px;
 			width:50%;
 		}
 	
@@ -200,10 +226,12 @@ table.stats {
 			text-align: center;
 			color: rgba(255,255,255,.9);
 			text-shadow: none;
-			font-size:14pt;
+			font-size:13pt;
+			font-weight:700;
 			transition: .25s all;
 			line-height:1.5em;
 			vertical-align:bottom;
+			font-family: "Open Sans", Helvetica, sans-serif;
 		}
 		
 		
@@ -216,6 +244,8 @@ table.stats {
 			text-align:center;
 			left:0;
 			font-size:12pt;
+			font-weight:300;
+			font-family: "Roboto", sans-serif;
 		}
 		
 		.chart bar.toosmall:before {
@@ -246,7 +276,7 @@ table.stats {
 	}
 
 	table.bio td.name {
-		font-size:14pt;
+		font-size:13pt;
 		width: 168px;
 	}
 
