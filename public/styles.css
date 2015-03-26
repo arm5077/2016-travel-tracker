@@ -110,8 +110,8 @@ ul.candidates {
 		opacity:0;
 		transition: .25s all;
 		background-color: #3d3d3d;
-	  width:100%;
-	z-index:10;
+	  	width:100%;
+		z-index:10;
 	}
 	
 	.toggle:hover:before{
