@@ -443,7 +443,45 @@ table.stats {
 			font-size: 13pt;
 			padding-left: 2px;
 		}
+
+.credits {
+	padding:20px 3%;
+			font-weight:300;
+}
+
+	.credits h4 {
+		font-weight: 100;
+		font-size: 20pt;
+	}
 		
+#about {
+	padding: 10px 0px;
+	width:70%;
+	display: inline-block;
+	display:inline-block;
+}	
+	
+	#about p {
+		font-weight:300;
+	}
+	
+#wemadethis {
+	width: 20%;
+	border-left: 1px solid #999;
+	display:inline-block;
+	vertical-align: top;
+	padding:10px 0px 10px 2%;
+	margin-left:2%;
+}
+
+	#wemadethis a {
+		color: inherit;
+		margin-top:16px;
+		display:block;
+
+	}
+
+
 	
 @media screen and (max-width: 1040px) {
 	table.stats .total h3 {
@@ -519,6 +557,14 @@ table.stats {
 	
 	.introduction {
 		display:none;
+	}
+	
+	#about, #wemadethis {
+		display:block;
+		width:100%;
+		padding:0;
+		margin: 0 0 10px 0;
+		border: 0;
 	}
 	
 }
