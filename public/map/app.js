@@ -263,6 +263,8 @@ app.directive("map", function(){
 		resize();
 		angular.element(window).on("resize", resize);
 		
+		setInterval(resize, 1000)
+		
 		function resize(){
 			element.css({
 				width: (element.parent()[0].offsetWidth - element.parent().children()[0].offsetWidth) + "px"
