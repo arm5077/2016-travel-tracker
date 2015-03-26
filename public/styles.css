@@ -6,7 +6,6 @@ html, body {
 	margin: 0;
 	color:rgba(255,255,255,.9);
 	background-color: #222;
-	min-width:500px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -503,6 +502,23 @@ table.stats {
 	table.bio .portrait {
 		width:40px;
 		height: 40px;
+	}
+	
+	#map {
+		height:auto!important;
+	}
+	
+	#map iframe {
+		height:500px;
+	}
+
+	.search {
+		position: static;
+		display: block;
+	}
+	
+	.introduction {
+		display:none;
 	}
 	
 }
