@@ -37,9 +37,15 @@
 		<div class = "intro">
 			<h2>2016 Travel Tracker</h2>
 			<!--<span ng-repeat="trip in data" style="background-color: {{candidates[trip.candidate].color}}; padding: 5px ">{{trip.candidate}} </span>-->
-			<p>Travel Tracker covers trips current and potential presidential candidates made outside of their home states after Nov. 4, 2014. The database is compiled from press releases and news articles.</p>
+			<p><span class = "underline">{{count}} trips</span> found</p>
+			<p>between <span class="underline">{{ moment(start).format("MM/D/YY")}}</span> and <span class="underline">{{ moment(end).format("MM/D/YY")}}</p>
+			<p>in <span class="underline" ng-bind="getStateName(params.state)"></span> for</p>
+			<ul class="candidateCollection">
+				<li ng-repeat="candidate in candidates" style="background-color: {{candidate.color}}">{{candidate[0].candidate.substring(candidate[0].candidate.lastIndexOf(" "))}}</li>
+			</ul>
+				
+				
 		</div>
-		<div class="total" ng-bind="count + ' trips'"></div>
 		<ul class="events">
 			<li ng-repeat="trip in data" ng-click="clickTrip(trip)" id="{{trip.tripid}}" ng-class="{selected: trip.selected == true }" ng-mouseOver="moveTarget(trip, candidates[trip.candidate].color)" ng-mouseLeave="clearTarget()">
 				<table>

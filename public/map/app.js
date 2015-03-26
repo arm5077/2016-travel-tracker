@@ -255,6 +255,11 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 		target.setStyle({ opacity: 0 });
 	}
 	
+	$scope.getStateName = function(abbrev){
+		name = $scope.states.filter(function(state){ return(state.state == abbrev) })[0].Name;
+		return (name == "All states") ? "all states" : name;
+	}
+	
 }]);
 
 // This directive resizes the map dynamically so it takes up window space not occupied by the rail.
