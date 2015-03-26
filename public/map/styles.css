@@ -1,6 +1,10 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:700);
 
+.mobile {
+	display:none;
+}
+
 html, body {
 	width: 100%;
 	height: 100%;
@@ -23,7 +27,72 @@ td {
 	width: 80%;
 	display:inline-block;
 	float:left;
+	position:relative;
 }
+
+.introduction {
+	width: 70%;
+	background-color: rgba(0,0,0,.9);
+	color: #ddd;
+	position:absolute;
+	padding:25px 5%;
+	z-index:999999;
+	box-shadow: 0px 0px 10px black;
+	text-align:center;
+}
+
+	.introduction h1 {
+		font-weight:100;
+		text-align:center;
+		font-size:40pt;
+		line-height: 1.1em;
+	}
+	
+	.introduction p {
+		font-size: 13pt;
+		font-weight: 200;
+		  line-height: 1.2em;
+		text-align:center;
+	}
+	
+	.introduction ul {
+		list-style:0;
+		margin:0;
+		padding:0;
+	}
+	
+		.introduction table {
+			display: inline-block;
+		  margin: 0px 10px 0px;
+			width:30%;
+		  padding: 10px;
+		  font-size: 12pt;
+		  font-weight: 500;
+		  line-height: 1.2em;
+			vertical-align:middle;
+		}
+			.introduction table td {
+				vertical-align:middle;
+			}
+			
+			.introduction .fa {
+				font-size: 25pt;
+				margin:10px;
+			}
+			
+			.introduction #go {
+				width: 50px;
+			  margin: 22px auto 0px;
+			  border: 1px solid #aaa;
+			  border-radius: 3px;
+			  padding: 10px;
+			  font-size: 12pt;
+				transition: .25s all;
+			}
+				.introduction #go:hover {
+					border: 1px solid #ddd;
+					cursor:pointer;
+				}
 
 #rail {
 
@@ -292,4 +361,19 @@ td {
 			font-size: 13pt;
 			padding-left: 2px;
 		}
-		}
+
+@media screen and (max-width: 1000px) {
+
+	.introduction h1 {
+		font-size: 20pt;
+	}
+	
+	.introduction table {
+		width: 100%;
+	}
+	
+}
+
+@media screen and (max-width: 800px) {
+	.introduction {display:none;}
+}

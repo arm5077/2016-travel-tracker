@@ -18,7 +18,7 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 	$scope.start = moment().subtract(7,'days').toDate();
 	$scope.end = new Date();
 	$scope.state = "*";
-	$scope.search = true;
+	$scope.search = false;
 	$scope.states = states;
 	
 	$http({

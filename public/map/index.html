@@ -36,6 +36,7 @@
 	<div id="rail">
 		<div class = "intro">
 			<h2>2016 Travel Tracker</h2>
+			<!--<span ng-repeat="trip in data" style="background-color: {{candidates[trip.candidate].color}}; padding: 5px ">{{trip.candidate}} </span>-->
 			<p>Travel Tracker covers trips current and potential presidential candidates made outside of their home states after Nov. 4, 2014. The database is compiled from press releases and news articles.</p>
 		</div>
 		<div class="total" ng-bind="count + ' trips'"></div>
@@ -92,6 +93,51 @@
 		</ul>
 	</div>
 	<map id="map">
+		<div class="introduction" center ng-show="intro && standalone != true">
+			<h1>Follow along for the ride.</h1>
+				<p>Join the cast of candidates running the ultimate race of American politics.</p>
+				<div class="mobile">
+					<p>Scroll down the list to the left to see where they've been.<p>
+					<p>Narrow your search by date and state using the magnifying glass to the right.</p>
+					<p>And pick the candidates you want to track using the list below.</p>
+				</div>
+
+						<table>
+							<tr>
+								<td>
+									<i class="fa fa-arrow-circle-o-left" style="float:left"></i>
+								</td>
+								<td>
+									Scroll to see where they've have been.
+								</td>
+							</td>
+						</table>
+				
+						<table>
+							<tr>
+								<td>
+									Narrow your search by date and state.
+								</td>
+								<td>
+									<i class="fa fa-arrow-circle-o-right" style="float:right"></i>
+								</td>
+							</tr>
+						</table>
+				
+						<table>
+							<tr>
+								<td>Pick the candidates you'd like to track (and see their stats).</td>
+							</tr>
+							<tr>
+								<td><i class="fa fa-arrow-circle-o-down" style="margin-top:10px"></i></td>
+							</tr>
+						</table>
+						
+				
+				<div id="go" ng-click="intro = false;">Go</div>
+				
+		</div>
+		
 		<div class = "searchButton" ng-show="!search && standalone==true" ng-click="search=true">
 			<i class="fa fa-search"></i>
 		</div>
