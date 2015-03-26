@@ -13,6 +13,71 @@ h1, h2, h3, h4, h5, h6 {
 	margin:0;
 }
 
+
+.introduction {
+	width: 70%;
+	background-color: rgba(0,0,0,.9);
+	color: #ddd;
+	position:fixed;
+	padding:25px 5%;
+	z-index:999999;
+	box-shadow: 0px 0px 10px black;
+	text-align:center;
+}
+
+	.introduction h1 {
+		font-weight:100;
+		text-align:center;
+		font-size:40pt;
+		line-height: 1.1em;
+	}
+	
+	.introduction p {
+		font-size: 13pt;
+		font-weight: 200;
+		  line-height: 1.2em;
+		text-align:center;
+	}
+	
+	.introduction ul {
+		list-style:0;
+		margin:0;
+		padding:0;
+	}
+	
+		.introduction table {
+			display: inline-block;
+		  margin: 0px 10px 0px;
+			width:30%;
+		  padding: 10px;
+		  font-size: 12pt;
+		  font-weight: 500;
+		  line-height: 1.2em;
+			vertical-align:middle;
+		}
+			.introduction table td {
+				vertical-align:middle;
+			}
+			
+			.introduction .fa {
+				font-size: 25pt;
+				margin:10px;
+			}
+			
+			.introduction #go {
+				width: 50px;
+			  margin: 22px auto 0px;
+			  border: 1px solid #aaa;
+			  border-radius: 3px;
+			  padding: 10px;
+			  font-size: 12pt;
+				transition: .25s all;
+			}
+				.introduction #go:hover {
+					border: 1px solid #ddd;
+					cursor:pointer;
+				}
+
 #map {
 	width: 100%;
 	border:0;
@@ -401,8 +466,18 @@ table.stats {
 		font-size:13pt;
 		width: 168px;
 	}
+	
+	.introduction h1 {
+		font-size: 20pt;
+	}
+	
+	.introduction table {
+		width: 100%;
+	}
+	
 
 }
+
 
 @media screen and (max-width: 900px) {
 	li.candidate {

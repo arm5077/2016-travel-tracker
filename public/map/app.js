@@ -24,7 +24,6 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 	$scope.moment = moment;
 	$scope.states = states;
 	$scope.search = false;
-	$scope.intro = true;
 	
 	// Initialize map
 	var map = L.map('map', {
@@ -63,6 +62,9 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 		
 		$scope.standalone = $scope.params.standalone || true;
 	
+		$scope.intro = $scope.params.intro || false;
+		
+		console.log($scope.params.intro);	
 		
 		$scope.data = data.results;
 		
@@ -269,16 +271,3 @@ app.directive("map", function(){
 	}
 });
 
-app.directive("center", function(){
-	return function(scope, element, attr){
-		resize();
-		angular.element(window).on("resize", resize);
-		
-		function resize(){
-			element.css({
-				top: ((element.parent()[0].offsetHeight - element[0].offsetHeight) / 2 ) + "px",
-				left: ((element.parent()[0].offsetWidth - element[0].offsetWidth) / 2 ) + "px"
-			});
-		}
-	}
-});

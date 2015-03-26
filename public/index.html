@@ -20,9 +20,49 @@
 	
 </head>
 
-<body ng-controller="travelController">
+<body ng-controller="travelController" ng-click="intro = false">
 	
-	<div class id="map" map>
+	<div class="introduction" ng-show="intro==true" center>
+		<h1>Follow along for the ride.</h1>
+			<p>Join the cast of candidates running the ultimate race of American politics. This map shows the number of visits potential presidential candidates have made to different U.S. cities on the campaign trail.</p>
+
+					<table>
+						<tr>
+							<td>
+								<i class="fa fa-arrow-circle-o-left" style="float:left"></i>
+							</td>
+							<td>
+								Scroll to see where they've have been.
+							</td>
+						</td>
+					</table>
+			
+					<table>
+						<tr>
+							<td>
+								Narrow your search by date and state.
+							</td>
+							<td>
+								<i class="fa fa-arrow-circle-o-right" style="float:right"></i>
+							</td>
+						</tr>
+					</table>
+			
+					<table>
+						<tr>
+							<td>Pick the candidates you'd like to track (and see their stats).</td>
+						</tr>
+						<tr>
+							<td><i class="fa fa-arrow-circle-o-down" style="margin-top:10px"></i></td>
+						</tr>
+					</table>
+					
+			
+			<div id="go" ng-click="intro = false; search=true">Go</div>
+			
+	</div>
+	
+	<div class id="map" map >
 		<iframe ng-src="{{ makeURL(params) }}"></iframe>
 		
 		<div class = "searchButton" ng-show="!search" ng-click="search=true">
@@ -62,7 +102,7 @@
 	</div>
 	
 	<div class = "buttons">
-		<span>Click below to see results by candidate, or </span>
+		<span> Click below to see results by candidate, or </span>
 		<button ng-click="selectAll()">Select all</button>
 		<button ng-click="unselectAll()">Unselect all</button>
 		<button ng-click="expandAll()">Expand all</button>

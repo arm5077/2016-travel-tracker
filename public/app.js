@@ -20,6 +20,7 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 	$scope.state = "*";
 	$scope.search = false;
 	$scope.states = states;
+	$scope.intro = true;
 	
 	$http({
 		url: "/candidates",
@@ -121,7 +122,7 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 		
 		colorString = colorString.slice(0,-1);
 		
-		$scope.mapString = "?candidates=" + candidateString + "&colors=" + colorString + "&standalone=false&start=" + $scope.start + "&end" + $scope.end + "&state=" + $scope.state;
+		$scope.mapString = "?candidates=" + candidateString + "&colors=" + colorString + "&standalone=false&start=" + $scope.start + "&end" + $scope.end + "&state=" + $scope.state + "&intro=" + $scope.intro;
 	}
 	
 	$scope.expandAll = function(){
@@ -175,6 +176,20 @@ app.directive("map", function(){
 		function resize(){
 			element.css({
 				height: Math.min((window.innerHeight * .8 ), 450) + "px"
+			});
+		}
+	}
+});
+
+app.directive("center", function(){
+	return function(scope, element, attr){
+		resize();
+		angular.element(window).on("resize", resize);
+		
+		function resize(){
+			element.css({
+				top: ((window.innerHeight - element[0].offsetHeight) / 2 ) + "px",
+				left: ((window.innerWidth - element[0].offsetWidth) / 2 ) + "px"
 			});
 		}
 	}
