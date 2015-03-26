@@ -188,7 +188,7 @@ app.directive("center", function(){
 		
 		function resize(){
 			element.css({
-				top: ((window.innerHeight - element[0].offsetHeight) / 2 ) + "px",
+				top: "25px",
 				left: ((window.innerWidth - element[0].offsetWidth) / 2 ) + "px"
 			});
 		}
