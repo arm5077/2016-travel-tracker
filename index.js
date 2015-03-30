@@ -28,12 +28,12 @@ app.get("/candidates", function(request, response){
 	var pending = 0;
 	var connection = connectMySQL();
 
-	connection.query("SELECT trips.candidate, candidates.party, places.city, trips.state, accompanied_by, notes, DATE_FORMAT(MAX(start), '%Y-%m-%d') as start \
-		FROM trips \
-		JOIN candidates on candidates.name=trips.candidate \
-		JOIN ( SELECT tripid, placeid FROM stops GROUP BY tripid ) as stops on stops.tripid = trips.tripid \
-		JOIN places on stops.placeid=places.id \
-		GROUP BY candidate ORDER BY candidate", 
+	connection.query("SELECT trips.tripid, trips.candidate, candidates.party, places.city, trips.state, accompanied_by, notes, start \
+					FROM (SELECT * FROM trips ORDER BY start DESC) as trips \
+					JOIN candidates on candidates.name=trips.candidate \
+					JOIN (select * from stops ORDER BY tripid DESC) as stops on stops.tripid = trips.tripid \
+					JOIN places on stops.placeid=places.id \
+					GROUP BY candidate ORDER BY candidate", 
 	function(err, rows, header){	
 		if(err) throw err;
 		rows.forEach(function(candidate){
