@@ -28,8 +28,8 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 	// Initialize map
 	var map = L.map('map', {
 		maxZoom: 7,
-		minZoom: 4
-	}).setView([39.8282, -98.5795], 4);
+		minZoom: 3
+	});
 
 	// Throw in my custom baselayer
 		L.tileLayer('http://{s}.tiles.mapbox.com/v3/arm5077.78b64076/{z}/{x}/{y}.png', {}).addTo(map);
@@ -59,17 +59,17 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 		$scope.params.end = $scope.params.end || new Date();
 		$scope.params.end = new Date( $scope.params.end );
 		$scope.params.state = $scope.params.state || "*";
-		
 		$scope.standalone = $scope.params.standalone || true;
-	
 		$scope.intro = $scope.params.intro || false;
-		
 		console.log($scope.params.intro);	
-		
 		$scope.data = data.results;
-		
-		
 		$scope.count = data.count;
+		
+		// If standalone, zoom the map out a bit. Other, it's in the app -- zoom it in.
+		if( $scope.standalone )
+			map.setView([39.8282, -98.5795], 3);
+		else
+			map.setView([39.8282, -98.5795], 4);
 		
 		// Build new array with candidate as the base
 		$scope.candidates = {};
