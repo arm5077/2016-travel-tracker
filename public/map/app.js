@@ -66,7 +66,7 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 		$scope.count = data.count;
 		
 		// If standalone, zoom the map out a bit. Other, it's in the app -- zoom it in.
-		if( $scope.standalone )
+		if( $scope.standalone == true )
 			map.setView([39.8282, -98.5795], 3);
 		else
 			map.setView([39.8282, -98.5795], 4);
