@@ -141,6 +141,8 @@ app.get("/scrape", function(request, response){
 	
 	var spreadsheet_key = process.env.SPREADSHEET_KEY;
 
+	console.log(spreadsheet_key);
+
 	var completed = 0;
 	var timeout = 0;
 
