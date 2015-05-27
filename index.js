@@ -147,7 +147,7 @@ app.get("/scrape", function(request, response){
 	// Pop open the source spreadsheet
 	Spreadsheet.load({
 		debug: true,
-		spreadsheetName: "Wedding budget",
+		spreadsheetName: "2016 Travel Tracker",
 		worksheetName: "Sheet1",
 		oauth: {
 			email: "53720112401-5t3fo8iilcpsvslscsr3uhcagjqr66p5.apps.googleusercontent.com",
