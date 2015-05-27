@@ -139,10 +139,9 @@ app.get("/scrape", function(request, response){
 	
 	var connection = connectMySQL();
 	
+	var spreadsheet_email = process.env.SPREADSHEET_EMAIL;
 	var spreadsheet_key = process.env.SPREADSHEET_KEY;
-
-	console.log(spreadsheet_key);
-
+	
 	var completed = 0;
 	var timeout = 0;
 
@@ -152,7 +151,7 @@ app.get("/scrape", function(request, response){
 		spreadsheetName: "2016 Travel Tracker",
 		worksheetName: "Sheet1",
 		oauth: {
-			email: "53720112401-5t3fo8iilcpsvslscsr3uhcagjqr66p5.apps.googleusercontent.com",
+			email: spreadsheet_email,
 			key: spreadsheet_key
 		}
 	}, function(err, spreadsheet){
