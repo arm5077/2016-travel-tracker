@@ -139,8 +139,7 @@ app.get("/scrape", function(request, response){
 	
 	var connection = connectMySQL();
 	
-	var spreadsheet_username = process.env.SPREADSHEET_USERNAME;
-	var spreadsheet_password = process.env.SPREADSHEET_PASSWORD;
+	var spreadsheet_key = process.env.SPREADSHEET_KEY;
 
 	var completed = 0;
 	var timeout = 0;
@@ -148,10 +147,12 @@ app.get("/scrape", function(request, response){
 	// Pop open the source spreadsheet
 	Spreadsheet.load({
 		debug: true,
-		spreadsheetName: "2016 Travel Tracker",
+		spreadsheetName: "Wedding budget",
 		worksheetName: "Sheet1",
-		username: spreadsheet_username,
-		password: spreadsheet_password
+		oauth: {
+			email: "53720112401-5t3fo8iilcpsvslscsr3uhcagjqr66p5.apps.googleusercontent.com",
+			key: spreadsheet_key
+		}
 	}, function(err, spreadsheet){
 		if( err ) throw err;
 		spreadsheet.receive(function(err, rows, info) {
