@@ -143,7 +143,9 @@ app.get("/scrape", function(request, response){
 	var spreadsheet_key = process.env.SPREADSHEET_KEY;
 	
 	var completed = 0;
+	var outstanding = 0;
 	var timeout = 0;
+
 
 	// Pop open the source spreadsheet
 	Spreadsheet.load({
@@ -158,6 +160,7 @@ app.get("/scrape", function(request, response){
 		if( err ) throw err;
 		spreadsheet.receive(function(err, rows, info) {
 			if( err ) throw err;
+			
 			// Cycle through spreadsheet and create new object
 			var trips = makeObjectFromSpreadsheet(rows);
 
@@ -167,10 +170,26 @@ app.get("/scrape", function(request, response){
 			connection.query('TRUNCATE TABLE trips;', function(err, rows, header){ console.log("truncated trips");  if( err ) throw err; });
 
 			var added_cities = [];
+			
+			// Start checker to see if we're done computing
+			var success = 0;
+			var checker = setInterval(function(){
+				console.log(outstanding);
+				if( outstanding === 0 )
+					success++;
+				else
+					success = 0;
+
+				if( success == 5 ){
+					response.status(200).json({ message: "done" });
+					connection.end();
+					clearInterval(checker);
+				}
+
+			},1000);
 		
 			// Cycle through each "trip" row
 			trips.forEach(function(trip){
-				console.log(trip["First Name"]);
 				// This is my lil way of determining whether a row is undefined. There is probably a better way to do it.
 				if (trip["First Name"] && moment( trip["Start Date (mm/dd/yy)"] ) <= moment(new Date()) ){
 					
@@ -178,17 +197,19 @@ app.get("/scrape", function(request, response){
 					// But first, get rid of annoying extra spaces. Stupid Google Sheets. 
 					name = trip["First Name"].replace(/\s/g, '') + " " + trip["Last Name"].replace(/\s/g, '');
 					
-					console.log("Going after " + name);
-					
 					connection.query('INSERT IGNORE INTO candidates (name, party) VALUES (?,?);', [name, trip["Party (R or D)"]], function(err, info) {
 						if(err) throw err;
 					});
 
 					// Insert the actual trip
+					outstanding++;
 					connection.query('INSERT INTO trips (candidate, state, start, end, total_days, accompanied_by, notes) VALUES (?,?,?,?,?,?,?)', 
 						[name, trip["State (Abbrev.)"], moment( trip["Start Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), moment( trip["End Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), trip["Total Days"], trip["Appeared With (if more than one, use commas)"], trip["Notes"] ], 
 					function(err, info) {
 						if( err ) throw err;
+						
+						outstanding--;
+						
 						// Save that tripid. 
 						trip.tripid = info.insertId;
 
@@ -198,43 +219,45 @@ app.get("/scrape", function(request, response){
 								if(trip.hasOwnProperty(city)){
 									// If the column header mentions "City" (ie City 1, City 2)
 									if(city.indexOf("City") != -1){
-										completed--;
-										console.log(trip[city] + " found: " + completed);
 										// I use a little array test to see if we've already added a city to the database in this session.
 										// It saves us from making a query sometimes.
 										var was_city_added = added_cities.indexOf(trip[city] + ", " + trip["State (Abbrev.)"]);
-										console.log("Was the city added? " + was_city_added);
 										if( true ) {
+
 											added_cities.push(trip[city] + ", " + trip["State (Abbrev.)"]);
 											// See if the city already exists in the database
+											outstanding++;
 											connection.query('SELECT * FROM places WHERE city = ? AND state = ?', [trip[city], trip["State (Abbrev.)"]], function(err, rows, header){
 												if(err) throw err;
-
+												outstanding--;
 												// City already exists! Pop-U-lar. 
 												if(rows.length > 0){
 													// Now that that's settled, let's add the stop
 													placeid = rows[0].id;
+													outstanding++;
 													connection.query('INSERT INTO stops (tripid, placeid) VALUES (?,?)', [trip.tripid, placeid], function(){ 
 														if( err ) throw err; 
 														completed++;
-														console.log(completed);
+														outstanding--;
 														if( completed == 0 ){
-															response.status(200).json({ message: "All done!" });
-															setTimeout(function(){ connection.end(); }, 5000);
+
 														}
 													});
 												}
 												else {
-													console.log("Added " + trip[city]);													
+													outstanding++;
 													connection.query("INSERT IGNORE INTO places (city, state) VALUES (?,?)", [trip[city], trip["State (Abbrev.)"]], function(err, info){
 														if(err) throw err; 
-
+														outstanding--;
 														if( info.insertId == 0 ){
+															outstanding++;
 															connection.query('SELECT * FROM places WHERE city = ? AND state = ?', [trip[city], trip["State (Abbrev.)"]], function(err, rows, header){
 																if( err ) throw err;
+																outstanding--;
 																addStop(trip.tripid, rows[0].id);
 															});
 														} else {
+															completed--;
 															getLatLngs(trip[city], trip["State (Abbrev.)"]);
 															addStop(trip.tripid, info.insertId);
 														}
@@ -256,15 +279,20 @@ app.get("/scrape", function(request, response){
 
 	function getLatLngs(city, state){
 		// Pull lat/lng info from geocoder. But do it in a timeout so we don't overwhelm Ye Olde Geoparser
+		outstanding++;
 		setTimeout( function(){
 			geocoder.geocode(city + ", " + state, function(err, res){
 				if(err) throw err;
+				outstanding--;
 				// Did we actually get a geocoding result?
 				if( res.length == 0 || !res[0] ) res.push({"latitude": 0, "longitude": 0})
 
 				// Add it to the database
+				outstanding++;
 				connection.query("UPDATE places SET lat = ?, lng = ? WHERE city = ? AND state = ?", [parseFloat(res[0].latitude), parseFloat(res[0].longitude), city, state], function(err, info){ 
 					if(err) throw err;
+					completed++;
+					outstanding--
 				});
 			});
 		}, timeout * 500);
@@ -283,10 +311,8 @@ app.get("/scrape", function(request, response){
 		connection.query('INSERT INTO stops (tripid, placeid) VALUES (?,?)', [tripid, placeid], function(err, info){ 
 			if( err ) throw err; 
 			completed++;
-			console.log(completed);
 			if(completed == 0) {
-				response.status(200).json({ message: "All done!" });
-				setTimeout(function(){ connection.end(); }, 5000);
+
 			}
 	
 		});

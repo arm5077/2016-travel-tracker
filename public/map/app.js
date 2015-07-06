@@ -139,54 +139,12 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 							trip.stops.splice(i, 1);
 							continue;
 						}
-						
-						
-						
-						// If we've just moved from a previous chain, connect to it with a dotted line
-						/*
-						if( lastLatLng.length > 0 ){
-							L.polyline([ [trip.stops[i].lat, trip.stops[i].lng], lastLatLng ], {
-								color: $scope.colors[currentColor],
-								dashArray: "3,10"
-							}).addTo(map);
-							lastLatLng = [];
-						}
-						*/
-						
-						// Which stop are we on?? If a trip has multiple stops, connect with solid line
-						if( i > 0 ){
-							
-							/*
-							L.polyline([ [trip.stops[i].lat, trip.stops[i].lng], [trip.stops[i-1].lat, trip.stops[i-1].lng] ], {
-								color: $scope.colors[currentColor]
-							}).addTo(map);
-							*/
-							
+						if( i > 0 ){	
 							addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[name.replace(" ","")], 10, markers);
 						
 						} else {
 							lastLatLng = [trip.stops[i].lat, trip.stops[i].lng];
-							
-							// If we're on the first stop of the last trip, lay the portrait down
-							
-							/*
-							if( $scope.candidates[name].indexOf(trip) == 0 ){
-								// Add portrait marker
-								var marker = new L.marker([trip.stops[i].lat, trip.stops[i].lng], {
-									icon: L.divIcon({
-										html: "<div class='portrait' style='background-color: " + $scope.colors[currentColor] + "'><img src='/assets/" + name.replace(" ", "") + ".png' /></div>",
-										iconSize: [50,50],
-										className: ""
-									})
-								});
-								
-								clickMarker(marker, trip);
-							
-								markers.addLayer(marker);
-							
-							} else {
-							*/	addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[name.replace(" ","")], 10, markers);
-							//}
+							addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[name.replace(" ","")], 10, markers);
 						}
 					}
 				});
@@ -256,8 +214,11 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 	}
 	
 	$scope.getStateName = function(abbrev){
-		name = $scope.states.filter(function(state){ return(state.state == abbrev) })[0].Name;
-		return (name == "All states") ? "all states" : name;
+		if( abbrev ){
+			name = $scope.states.filter(function(state){ return(state.state == abbrev) })[0].Name;
+			return (name == "All states") ? "all states" : name;
+		}
+		
 	}
 	
 }]);
