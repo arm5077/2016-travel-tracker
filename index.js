@@ -220,7 +220,7 @@ app.get("/scrape", function(request, response){
 														console.log(completed);
 														if( completed == 0 ){
 															response.status(200).json({ message: "All done!" });
-															connection.end();	
+															setTimeout(function(){ connection.end(); }, 5000);
 														}
 													});
 												}
@@ -286,7 +286,7 @@ app.get("/scrape", function(request, response){
 			console.log(completed);
 			if(completed == 0) {
 				response.status(200).json({ message: "All done!" });
-				connection.end();
+				setTimeout(function(){ connection.end(); }, 5000);
 			}
 	
 		});
