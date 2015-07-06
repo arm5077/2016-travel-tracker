@@ -218,7 +218,10 @@ app.get("/scrape", function(request, response){
 														if( err ) throw err; 
 														completed++;
 														console.log(completed);
-
+														if( completed == 0 ){
+															response.status(200).json({ message: "All done!" });
+															connection.end();	
+														}
 													});
 												}
 												else {
@@ -281,6 +284,11 @@ app.get("/scrape", function(request, response){
 			if( err ) throw err; 
 			completed++;
 			console.log(completed);
+			if(completed == 0) {
+				response.status(200).json({ message: "All done!" });
+				connection.end();
+			}
+	
 		});
 	}
 
