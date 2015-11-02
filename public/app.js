@@ -48,6 +48,7 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 			candidate.color = colors[i];
 		});
 		
+		// Initialize map
 		$scope.createURLString();
 				
 	}).error(function(err){
@@ -122,7 +123,8 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 		
 		colorString = colorString.slice(0,-1);
 		
-		$scope.mapString = "?candidates=" + candidateString + "&colors=" + colorString + "&standalone=false&start=" + $scope.start + "&end" + $scope.end + "&state=" + $scope.state + "&intro=" + $scope.intro;
+		$scope.mapString = "?candidates=" + candidateString + "&colors=" + colorString + "&standalone=false&start=" + $scope.start + "&end=" + $scope.end + "&state=" + $scope.state + "&intro=" + $scope.intro;
+		console.log($scope.mapString);
 	}
 	
 	$scope.expandAll = function(){

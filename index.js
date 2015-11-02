@@ -100,7 +100,8 @@ app.get("/trips", function(request, response){
 
 		connection.query(query_string, function(err, rows, header){
 			if( err ) throw err;
-
+			console.log("yoyoyo");
+			console.log(rows);
 			if( rows.length == 0 ){
 				connection.end();
 				response.status(200).json({ count: rows.length, results: rows, params: request.query });
@@ -168,6 +169,7 @@ app.get("/scrape", function(request, response){
 			connection.query('TRUNCATE TABLE candidates', function(err, rows, header){ console.log("truncated candidates"); if( err ) throw err; });
 			connection.query('TRUNCATE TABLE stops', function(err, rows, header){ console.log("truncated stops"); if( err ) throw err; });
 			connection.query('TRUNCATE TABLE trips;', function(err, rows, header){ console.log("truncated trips");  if( err ) throw err; });
+			connection.query('DELETE FROM places WHERE lat IS NULL OR lat = 0;', function(err, rows, header){ console.log("deleted empty places");  if( err ) throw err; });
 
 			var added_cities = [];
 			
@@ -206,6 +208,7 @@ app.get("/scrape", function(request, response){
 					connection.query('INSERT INTO trips (candidate, state, start, end, total_days, accompanied_by, notes) VALUES (?,?,?,?,?,?,?)', 
 						[name, trip["State (Abbrev.)"], moment( trip["Start Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), moment( trip["End Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), trip["Total Days"], trip["Appeared With (if more than one, use commas)"], trip["Notes"] ], 
 					function(err, info) {
+
 						if( err ) throw err;
 						
 						outstanding--;

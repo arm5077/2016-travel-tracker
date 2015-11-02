@@ -51,12 +51,10 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 		method: "GET",
 		params: $scope.parameters
 	}).success(function(data, status, headers, config){
-				
+		console.log(data);
 		$scope.params = data.params;
 
-		$scope.params.start = $scope.params.start || moment().subtract(7,'days');
 		$scope.params.start = new Date( $scope.params.start );
-		$scope.params.end = $scope.params.end || new Date();
 		$scope.params.end = new Date( $scope.params.end );
 		$scope.params.state = $scope.params.state || "*";
 		$scope.standalone = $scope.params.standalone || true;
@@ -131,21 +129,14 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 				
 				// Cycle through trips
 				$scope.candidates[name].forEach( function(trip){
+
 					// Loop through stops
 					for( i=0; i<=trip.stops.length - 1; i++) {
-						
-						// If this stop goes nowhere (is at 0,0) let's remove it before it causes MORE trouble
-						if( trip.stops[i].lat == 0 ) {
-							trip.stops.splice(i, 1);
-							continue;
+						if(trip.stops[i].lat == null){
+							console.log(trip.stops[i]);
 						}
-						if( i > 0 ){	
-							addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[name.replace(" ","")], 10, markers);
-						
-						} else {
-							lastLatLng = [trip.stops[i].lat, trip.stops[i].lng];
-							addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[name.replace(" ","")], 10, markers);
-						}
+						addMarker([trip.stops[i].lat, trip.stops[i].lng], trip, $scope.colors[name.replace(" ","")], 10, markers);
+
 					}
 				});
 			}	
@@ -158,7 +149,6 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 	});
 	
 	function addMarker(LatLng, trip, color, radius, markers){
-		
 		var marker = new L.marker(LatLng, {
 			color: color,
 			icon: '<div class=\'circle\'><div class="number">1</div></div>'
