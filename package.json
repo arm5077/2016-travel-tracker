@@ -21,6 +21,7 @@
     "edit-google-spreadsheet": "^0.2.16",
     "express": "^4.12.2",
     "moment": "^2.9.0",
-    "mysql": "^2.5.5"
+    "mysql": "^2.5.5",
+    "node-geocoder": "^3.4.1"
   }
 }
