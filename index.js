@@ -76,13 +76,13 @@ app.get("/trips", function(request, response){
 	else {
 		// Handle query parameters
 		if( request.query.start ){
-			params += " AND start >=" + connection.escape(moment( request.query.start ).format("YYYY-MM-DD")); 
+			params += " AND start >=" + connection.escape(moment( new Date(request.query.start) ).format("YYYY-MM-DD")); 
 		} else {
 			// Default to returning results from within the past week.
-			params += " AND start >=" + connection.escape(moment( request.query.start ).subtract(7,"days").format("YYYY-MM-DD"))
+			params += " AND start >=" + connection.escape(moment( new Date(request.query.start) ).subtract(7,"days").format("YYYY-MM-DD"))
 		}
 		if( request.query.end )
-			params += " AND end <=" + connection.escape(moment( request.query.end ).format("YYYY-MM-DD"));
+			params += " AND end <=" + connection.escape(moment( new Date(request.query.end) ).format("YYYY-MM-DD"));
 		if( request.query.state && request.query.state != "*" )	
 			params += " AND state = " + connection.escape( request.query.state );
 		if( request.query.candidates) {
@@ -193,7 +193,7 @@ app.get("/scrape", function(request, response){
 			// Cycle through each "trip" row
 			trips.forEach(function(trip){
 				// This is my lil way of determining whether a row is undefined. There is probably a better way to do it.
-				if (trip["First Name"] && moment( trip["Start Date (mm/dd/yy)"] ) <= moment(new Date()) ){
+				if (trip["First Name"] && moment( new Date(trip["Start Date (mm/dd/yy)"]) ) <= moment(new Date()) ){
 					
 					// Insert candidate name into database (unless already exists)
 					// But first, get rid of annoying extra spaces. Stupid Google Sheets. 
@@ -206,7 +206,7 @@ app.get("/scrape", function(request, response){
 					// Insert the actual trip
 					outstanding++;
 					connection.query('INSERT INTO trips (candidate, state, start, end, total_days, accompanied_by, notes) VALUES (?,?,?,?,?,?,?)', 
-						[name, trip["State (Abbrev.)"], moment( trip["Start Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), moment( trip["End Date (mm/dd/yy)"] ).format("YYYY-MM-DD"), trip["Total Days"], trip["Appeared With (if more than one, use commas)"], trip["Notes"] ], 
+						[name, trip["State (Abbrev.)"], moment( new Date(trip["Start Date (mm/dd/yy)"]) ).format("YYYY-MM-DD"), moment( new Date(trip["End Date (mm/dd/yy)"]) ).format("YYYY-MM-DD"), trip["Total Days"], trip["Appeared With (if more than one, use commas)"], trip["Notes"] ], 
 					function(err, info) {
 
 						if( err ) throw err;
