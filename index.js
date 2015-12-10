@@ -4,9 +4,9 @@ var moment = require('moment');
 var Spreadsheet = require('edit-google-spreadsheet');
 var mysql = require("mysql");
 var geocoder = require('node-geocoder').getGeocoder("openstreetmap");;
-var apicache = require('apicache').options({ debug: true }).middleware;
+var apicache = require('apicache').options({ debug: true }).middleware;  // Caches API responses
 var firstBy = require('thenBy.js');
-
+var madison = require('madison'); // Converts state names to abbreviations and back
 
 // Turn on server
 var port = process.env.PORT || 3000;
@@ -79,10 +79,10 @@ app.get("/api/widget", apicache("5 minutes"), function(request, response){
 		rows.forEach(function(row){
 			var tripIndex = trips.map(function(d){ return d.tripid }).indexOf(row.tripid);
 			if( tripIndex == -1 ){
-				trips.push({ tripid: row.tripid, candidate: row.candidate, date: row.start, formatted_date: moment(date).format("MMM D, YYYY"), state: row.state, notes: row.notes, stops:[], stopCount: 0 });
+				trips.push({ tripid: row.tripid, candidate: row.candidate, date: row.start, formatted_date: moment(row.date).format("MMM D, YYYY"), state: row.state, notes: row.notes, stops:[], stopCount: 0 });
 				tripIndex = trips.length - 1
 			}
-			trips[tripIndex].stops.push({ city: row.city, state: row.state });
+			trips[tripIndex].stops.push({ city: row.city, state: madison.getStateNameSync(row.state) });
 			trips[tripIndex].stopCount++;
 		});
 		
