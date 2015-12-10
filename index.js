@@ -68,7 +68,7 @@ app.get("/api/candidates", apicache("5 minutes"), function(request, response){
 	});
 });
 
-app.get("/api/widget", function(request, response){
+app.get("/api/widget", apicache("5 minutes"), function(request, response){
 	var connection = connectMySQL();
 	
 	connection.query("SELECT * FROM trips JOIN stops ON trips.tripid = stops.tripid JOIN places ON stops.placeid = places.id WHERE start <= '" + moment( new Date() ).format("YYYY-MM-DD") + "' ORDER BY start DESC, stops.id ASC LIMIT 20", function(err, rows, header){
