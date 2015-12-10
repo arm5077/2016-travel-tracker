@@ -79,7 +79,7 @@ app.get("/api/widget", apicache("5 minutes"), function(request, response){
 		rows.forEach(function(row){
 			var tripIndex = trips.map(function(d){ return d.tripid }).indexOf(row.tripid);
 			if( tripIndex == -1 ){
-				trips.push({ tripid: row.tripid, candidate: row.candidate, date: row.start, state: row.state, notes: row.notes, stops:[], stopCount: 0 });
+				trips.push({ tripid: row.tripid, candidate: row.candidate, date: row.start, formatted_date: moment(data).format("MMM D, YYYY"), state: row.state, notes: row.notes, stops:[], stopCount: 0 });
 				tripIndex = trips.length - 1
 			}
 			trips[tripIndex].stops.push({ city: row.city, state: row.state });
