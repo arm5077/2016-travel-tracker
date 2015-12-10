@@ -4,7 +4,7 @@ var moment = require('moment');
 var Spreadsheet = require('edit-google-spreadsheet');
 var mysql = require("mysql");
 var geocoder = require('node-geocoder').getGeocoder("openstreetmap");;
-
+var apicache = require('apicache').options({ debug: true }).middleware;
 
 
 
@@ -33,7 +33,7 @@ app.use("/map", express.static(__dirname + '/public/map'));
 // Assets endpoint
 app.use("/assets", express.static(__dirname + '/public/assets'));
 
-app.get("/api/candidates", function(request, response){
+app.get("/api/candidates", apicache("5 minutes"), function(request, response){
 	var results = [];
 	var pending = 0;
 	var connection = connectMySQL();
@@ -68,7 +68,7 @@ app.get("/api/candidates", function(request, response){
 	});
 });
 
-app.get("/api/trips", function(request, response){
+app.get("/api/trips", apicache('5 minutes'), function(request, response){
 	
 	var connection = connectMySQL();
 	
@@ -354,8 +354,8 @@ app.get("/scrape", function(request, response){
 	}
 	
 	
-	
 });
+
 
 function connectMySQL(){
 	// Open connection to mySQL database
