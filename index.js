@@ -5,7 +5,7 @@ var Spreadsheet = require('edit-google-spreadsheet');
 var mysql = require("mysql");
 var geocoder = require('node-geocoder').getGeocoder("openstreetmap");;
 var apicache = require('apicache').options({ debug: true }).middleware;
-
+var firstBy = require('thenBy.js');
 
 
 // Turn on server
@@ -66,6 +66,39 @@ app.get("/api/candidates", apicache("5 minutes"), function(request, response){
 			});
 		});	
 	});
+});
+
+app.get("/api/widget", function(request, response){
+	var connection = connectMySQL();
+	
+	connection.query("SELECT * FROM trips JOIN stops ON trips.tripid = stops.tripid JOIN places ON stops.placeid = places.id WHERE start <= '" + moment( new Date() ).format("YYYY-MM-DD") + "' ORDER BY start DESC, stops.id ASC LIMIT 20", function(err, rows, header){
+
+		// Cycle through and aggregate on tripid
+		var trips = [];
+		
+		rows.forEach(function(row){
+			var tripIndex = trips.map(function(d){ return d.tripid }).indexOf(row.tripid);
+			if( tripIndex == -1 ){
+				trips.push({ tripid: row.tripid, candidate: row.candidate, date: row.start, state: row.state, notes: row.notes, stops:[], stopCount: 0 });
+				tripIndex = trips.length - 1
+			}
+			trips[tripIndex].stops.push({ city: row.city, state: row.state });
+			trips[tripIndex].stopCount++;
+		});
+		
+		// Sort by date and number of trips
+		trips.sort(
+			firstBy(function(a, b){
+				return b.date - a.date
+			})
+			.thenBy("stopCount", -1)
+		)
+		
+		response.status(200).json({ results: trips });
+		
+
+	});
+	
 });
 
 app.get("/api/trips", apicache('5 minutes'), function(request, response){

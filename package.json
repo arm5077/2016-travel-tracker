@@ -23,6 +23,7 @@
     "express": "^4.12.2",
     "moment": "^2.9.0",
     "mysql": "^2.5.5",
-    "node-geocoder": "2.16.1"
+    "node-geocoder": "2.16.1",
+    "thenBy.js": "git+https://git@github.com/Teun/thenBy.js.git"
   }
 }
