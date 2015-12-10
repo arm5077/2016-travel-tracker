@@ -47,7 +47,7 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 	// Pull in parameters and make API request
 	$scope.parameters = $location.search();
 	$http({
-		url: "/trips",
+		url: "/api/trips",
 		method: "GET",
 		params: $scope.parameters
 	}).success(function(data, status, headers, config){

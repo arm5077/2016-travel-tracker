@@ -33,7 +33,7 @@ app.use("/map", express.static(__dirname + '/public/map'));
 // Assets endpoint
 app.use("/assets", express.static(__dirname + '/public/assets'));
 
-app.get("/candidates", function(request, response){
+app.get("/api/candidates", function(request, response){
 	var results = [];
 	var pending = 0;
 	var connection = connectMySQL();
@@ -68,7 +68,7 @@ app.get("/candidates", function(request, response){
 	});
 });
 
-app.get("/trips", function(request, response){
+app.get("/api/trips", function(request, response){
 	
 	var connection = connectMySQL();
 	

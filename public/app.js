@@ -23,7 +23,7 @@ app.controller("travelController", ["$scope", "$http", "$location", "$sce", func
 	$scope.intro = true;
 	
 	$http({
-		url: "/candidates",
+		url: "/api/candidates",
 		method: "GET",
 		params: $scope.parameters
 	}).success(function(data, status, headers, config){
