@@ -49,7 +49,6 @@ Spreadsheet.load({
 				success = 0;
 
 			if( success == 5 ){
-				response.status(200).json({ message: "done" });
 				connection.end();
 				clearInterval(checker);
 			}
