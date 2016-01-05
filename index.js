@@ -71,7 +71,7 @@ app.get("/api/candidates", apicache("5 minutes"), function(request, response){
 app.get("/api/widget", apicache("5 minutes"), function(request, response){
 	var connection = connectMySQL();
 	
-	connection.query("SELECT * FROM trips JOIN stops ON trips.tripid = stops.tripid JOIN places ON stops.placeid = places.id WHERE start <= '" + moment( new Date() ).format("YYYY-MM-DD") + "' ORDER BY start DESC, stops.id ASC LIMIT 20", function(err, rows, header){
+	connection.query("SELECT candidates.name, candidates.party, trips.state, trips.start, trips.end, places.city  FROM trips JOIN stops ON trips.tripid = stops.tripid JOIN places ON stops.placeid = places.id join candidates on candidates.name = trips.candidate WHERE start <= '" + moment( new Date() ).format("YYYY-MM-DD") + "' ORDER BY start DESC, stops.id ASC LIMIT 20", function(err, rows, header){
 
 		// Cycle through and aggregate on tripid
 		var trips = [];
@@ -85,14 +85,6 @@ app.get("/api/widget", apicache("5 minutes"), function(request, response){
 			trips[tripIndex].stops.push({ city: row.city, state: madison.getStateNameSync(row.state) });
 			trips[tripIndex].stopCount++;
 		});
-		
-		// Sort by date and number of trips
-		trips.sort(
-			firstBy(function(a, b){
-				return b.date - a.date
-			})
-			.thenBy("stopCount", -1)
-		)
 		
 		response.status(200).json({ results: trips });
 		
