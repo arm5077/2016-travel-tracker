@@ -4,6 +4,8 @@ var Spreadsheet = require('edit-google-spreadsheet');
 var mysql = require("mysql");
 var geocoder = require('node-geocoder').getGeocoder("openstreetmap");;
 
+var connection = connectMySQL();
+
 var spreadsheet_email = process.env.SPREADSHEET_EMAIL;
 var spreadsheet_key = process.env.SPREADSHEET_KEY;
 
@@ -11,12 +13,6 @@ var completed = 0;
 var outstanding = 0;
 var timeout = 0;
 
-// Create pool of connections
-global.pool = mysql.createPool((process.env.CLEARDB_DATABASE_URL || "mysql://root@localhost/traveltracker") + "?connectionLimit=9");
-pool.on("error", function(err){  
-	console.log(err);
-	pool.end;
-});
 
 // Pop open the source spreadsheet
 Spreadsheet.load({
@@ -36,14 +32,10 @@ Spreadsheet.load({
 		var trips = makeObjectFromSpreadsheet(rows);
 
 		// Truncate all tables and reset to nothing
-		pool.getConnection(function(err, connection){
-			if(err) throw err;
-			var tasks = 0;
-			connection.query('TRUNCATE TABLE candidates', function(err, rows, header){ console.log("truncated candidates"); if( err ) throw err; if(tasks == 4) connection.release() });
-			connection.query('TRUNCATE TABLE stops', function(err, rows, header){ console.log("truncated stops"); if( err ) throw err; if(tasks == 4) connection.release() });
-			connection.query('TRUNCATE TABLE trips;', function(err, rows, header){ console.log("truncated trips");  if( err ) throw err; if(tasks == 4) connection.release() });
-			connection.query('DELETE FROM places WHERE lat IS NULL OR lat = 0;', function(err, rows, header){ console.log("deleted empty places");  if( err ) throw err; if(tasks == 4) connection.release() });		
-		});
+		connection.query('TRUNCATE TABLE candidates', function(err, rows, header){ console.log("truncated candidates"); if( err ) throw err; });
+		connection.query('TRUNCATE TABLE stops', function(err, rows, header){ console.log("truncated stops"); if( err ) throw err; });
+		connection.query('TRUNCATE TABLE trips;', function(err, rows, header){ console.log("truncated trips");  if( err ) throw err; });
+		connection.query('DELETE FROM places WHERE lat IS NULL OR lat = 0;', function(err, rows, header){ console.log("deleted empty places");  if( err ) throw err; });
 
 		var added_cities = [];
 		
@@ -57,6 +49,7 @@ Spreadsheet.load({
 				success = 0;
 
 			if( success == 5 ){
+				connection.end();
 				clearInterval(checker);
 			}
 
@@ -71,83 +64,81 @@ Spreadsheet.load({
 				// But first, get rid of annoying extra spaces. Stupid Google Sheets. 
 				name = trip["First Name"].replace(/\s/g, '') + " " + trip["Last Name"].replace(/\s/g, '');
 				
-				pool.getConnection(function(err, connection){
+				connection.query('INSERT IGNORE INTO candidates (name, party) VALUES (?,?);', [name, trip["Party (R or D)"]], function(err, info) {
 					if(err) throw err;
-					connection.query('INSERT IGNORE INTO candidates (name, party) VALUES (?,?);', [name, trip["Party (R or D)"]], function(err, info) {
-						if(err) throw err;
-					});
+				});
 
-					// Insert the actual trip
-					outstanding++;
-					connection.query('INSERT INTO trips (candidate, state, start, end, total_days, accompanied_by, notes) VALUES (?,?,?,?,?,?,?)', 
-						[name, trip["State (Abbrev.)"], moment( new Date(trip["Start Date (mm/dd/yy)"]) ).format("YYYY-MM-DD"), moment( new Date(trip["End Date (mm/dd/yy)"]) ).format("YYYY-MM-DD"), trip["Total Days"], trip["Appeared With (if more than one, use commas)"], trip["Notes"] ], 
-					function(err, info) {
+				// Insert the actual trip
+				outstanding++;
+				connection.query('INSERT INTO trips (candidate, state, start, end, total_days, accompanied_by, notes) VALUES (?,?,?,?,?,?,?)', 
+					[name, trip["State (Abbrev.)"], moment( new Date(trip["Start Date (mm/dd/yy)"]) ).format("YYYY-MM-DD"), moment( new Date(trip["End Date (mm/dd/yy)"]) ).format("YYYY-MM-DD"), trip["Total Days"], trip["Appeared With (if more than one, use commas)"], trip["Notes"] ], 
+				function(err, info) {
 
-						if( err ) throw err;
+					if( err ) throw err;
+					
+					outstanding--;
+					
+					// Save that tripid. 
+					trip.tripid = info.insertId;
 
-						outstanding--;
+					// Let's add the city data. First let's loop through all the headers to find City references.
+					for( city in trip ){
+						(function(city, trip){
+							if(trip.hasOwnProperty(city)){
+								// If the column header mentions "City" (ie City 1, City 2)
+								if(city.indexOf("City") != -1){
+									// I use a little array test to see if we've already added a city to the database in this session.
+									// It saves us from making a query sometimes.
+									var was_city_added = added_cities.indexOf(trip[city] + ", " + trip["State (Abbrev.)"]);
+									if( true ) {
 
-						// Save that tripid. 
-						trip.tripid = info.insertId;
+										added_cities.push(trip[city] + ", " + trip["State (Abbrev.)"]);
+										// See if the city already exists in the database
+										outstanding++;
+										connection.query('SELECT * FROM places WHERE city = ? AND state = ?', [trip[city], trip["State (Abbrev.)"]], function(err, rows, header){
+											if(err) throw err;
+											outstanding--;
+											// City already exists! Pop-U-lar. 
+											if(rows.length > 0){
+												// Now that that's settled, let's add the stop
+												placeid = rows[0].id;
+												outstanding++;
+												connection.query('INSERT INTO stops (tripid, placeid) VALUES (?,?)', [trip.tripid, placeid], function(){ 
+													if( err ) throw err; 
+													completed++;
+													outstanding--;
+													if( completed == 0 ){
 
-						// Let's add the city data. First let's loop through all the headers to find City references.
-						for( city in trip ){
-							(function(city, trip){
-								if(trip.hasOwnProperty(city)){
-									// If the column header mentions "City" (ie City 1, City 2)
-									if(city.indexOf("City") != -1){
-										// I use a little array test to see if we've already added a city to the database in this session.
-										// It saves us from making a query sometimes.
-										var was_city_added = added_cities.indexOf(trip[city] + ", " + trip["State (Abbrev.)"]);
-										if( true ) {
+													}
+												});
+											}
+											else {
+												outstanding++;
+												connection.query("INSERT IGNORE INTO places (city, state) VALUES (?,?)", [trip[city], trip["State (Abbrev.)"]], function(err, info){
+													if(err) throw err; 
+													outstanding--;
+													if( info.insertId == 0 ){
+														outstanding++;
+														connection.query('SELECT * FROM places WHERE city = ? AND state = ?', [trip[city], trip["State (Abbrev.)"]], function(err, rows, header){
+															if( err ) throw err;
+															outstanding--;
+															addStop(trip.tripid, rows[0].id);
+														});
+													} else {
+														completed--;
+														getLatLngs(trip[city], trip["State (Abbrev.)"]);
+														addStop(trip.tripid, info.insertId);
+													}
 
-											added_cities.push(trip[city] + ", " + trip["State (Abbrev.)"]);
-											// See if the city already exists in the database
-											outstanding++;
-											connection.query('SELECT * FROM places WHERE city = ? AND state = ?', [trip[city], trip["State (Abbrev.)"]], function(err, rows, header){
-												if(err) throw err;
-												outstanding--;
-												// City already exists! Pop-U-lar. 
-												if(rows.length > 0){
-													// Now that that's settled, let's add the stop
-													placeid = rows[0].id;
-													outstanding++;
-													connection.query('INSERT INTO stops (tripid, placeid) VALUES (?,?)', [trip.tripid, placeid], function(){ 
-														if( err ) throw err; 
-														completed++;
-														outstanding--;
-														if( completed == 0 ){
-
-														}
-													});
-												}
-												else {
-													outstanding++;
-													connection.query("INSERT IGNORE INTO places (city, state) VALUES (?,?)", [trip[city], trip["State (Abbrev.)"]], function(err, info){
-														if(err) throw err; 
-														outstanding--;
-														if( info.insertId == 0 ){
-															outstanding++;
-															connection.query('SELECT * FROM places WHERE city = ? AND state = ?', [trip[city], trip["State (Abbrev.)"]], function(err, rows, header){
-																if( err ) throw err;
-																outstanding--;
-																addStop(trip.tripid, rows[0].id);
-															});
-														} else {
-															completed--;
-															getLatLngs(trip[city], trip["State (Abbrev.)"]);
-															addStop(trip.tripid, info.insertId);
-														}
-
-													})
-												}
-											});
-										} 
-									}
+												})
+											}
+										});
+									} 
 								}
-							})(city, trip);
-						}
-					});
+							}
+						})(city, trip);
+					//connection.query("INSERT INTO travel.cities ")
+					}
 				});
 			}
 		});
@@ -217,3 +208,15 @@ function makeObjectFromSpreadsheet(rows){
 	return export_array;
 }
 
+function connectMySQL(){
+// Open connection to mySQL database
+var connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL || "mysql://root@localhost/travel");
+connection.on("error", function(err){  
+	connection.end();
+	 return setTimeout(function(){ return connectMySQL() },3000);
+});
+
+connection.connect( function(err){ if(err) throw err; });
+
+return connection;
+}
