@@ -201,6 +201,7 @@ app.get("/scrape", function(request, response){
 			var trips = makeObjectFromSpreadsheet(rows);
 
 			// Truncate all tables and reset to nothing
+			connection.query('SET @MAX_QUESTIONS = 100000;', function(err, rows, header){ console.log("set max questions to 100,000"); if( err ) throw err; });
 			connection.query('TRUNCATE TABLE candidates', function(err, rows, header){ console.log("truncated candidates"); if( err ) throw err; });
 			connection.query('TRUNCATE TABLE stops', function(err, rows, header){ console.log("truncated stops"); if( err ) throw err; });
 			connection.query('TRUNCATE TABLE trips;', function(err, rows, header){ console.log("truncated trips");  if( err ) throw err; });
