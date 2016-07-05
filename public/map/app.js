@@ -26,13 +26,14 @@ app.controller("mapController", ["$scope", "$http", "$location", function($scope
 	$scope.search = false;
 	
 	// Initialize map
+  var layer = new L.StamenTileLayer("toner-lite");
 	var map = L.map('map', {
 		maxZoom: 7,
 		minZoom: 3
 	});
+	
+  map.addLayer(layer);
 
-	// Throw in my custom baselayer
-		L.tileLayer('http://{s}.tiles.mapbox.com/v3/arm5077.78b64076/{z}/{x}/{y}.png', {}).addTo(map);
 	
 	// Add targeting reticule
 		var target = L.circleMarker([0,0], {
